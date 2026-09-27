@@ -3,850 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Game edukasi 2D pembelajaran Pancasila">
-    <title>Petualangan Pancasila</title>
+    <title>Pancasila — Pendidikan Vokasi UB</title>
+    <style>
+        :root {
+            --ub-blue: #0d2b57;
+            --ub-blue-deep: #081d3b;
+            --ub-gold: #c9a227;
+            --ink: #132238;
+            --muted: #66758a;
+            --surface: #ffffff;
+            --soft: #f5f7fa;
+        }
 
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+        * { box-sizing: border-box; }
+        html, body { margin: 0; min-height: 100%; }
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--ink);
+            background: var(--soft);
+            overflow-x: hidden;
+        }
+
+        .page {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            position: absolute;
+            inset: 0 0 auto 0;
+            z-index: 20;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: clamp(18px, 3vw, 32px) clamp(18px, 5vw, 64px);
+            pointer-events: none;
+        }
+
+        header img {
+            width: clamp(46px, 6vw, 72px);
+            height: clamp(46px, 6vw, 72px);
+            object-fit: contain;
+            display: block;
+            pointer-events: auto;
+        }
+
+        .welcome {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            padding: 110px 24px 80px;
+            text-align: center;
+            background:
+                radial-gradient(circle at 50% 15%, rgba(201, 162, 39, 0.09), transparent 30%),
+                linear-gradient(160deg, #fbfcfe 0%, #f0f4f9 100%);
+            transition: opacity 350ms ease, transform 350ms ease;
+        }
+
+        .welcome-content {
+            width: min(760px, 100%);
+        }
+
+        .eyebrow {
+            margin: 0 0 14px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ub-blue);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2.9rem, 7vw, 5.7rem);
+            line-height: 0.98;
+            letter-spacing: -0.045em;
+            color: var(--ub-blue-deep);
+        }
+
+        .question {
+            margin: 22px 0 34px;
+            font-size: clamp(1.55rem, 3.3vw, 2.35rem);
+            font-weight: 500;
+            color: #31435b;
+        }
+
+        .start-btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 15px 34px;
+            min-width: 142px;
+            font: inherit;
+            font-weight: 800;
+            font-size: 1rem;
+            color: #fff;
+            background: var(--ub-blue);
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(13, 43, 87, 0.18);
+            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(13, 43, 87, 0.23);
+            background: #12376d;
+        }
+
+        .start-btn:active { transform: translateY(0); }
+        .start-btn:focus-visible { outline: 3px solid rgba(201, 162, 39, 0.45); outline-offset: 4px; }
+
+        .door {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            pointer-events: none;
+        }
+
+        .door-panel {
+            background: var(--ub-blue-deep);
+            transition: transform 720ms cubic-bezier(.78, 0, .22, 1);
+            will-change: transform;
+        }
+
+        .door-panel.left { transform: translateX(-102%); }
+        .door-panel.right { transform: translateX(102%); }
+
+        .page.is-opening .welcome-content {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        .page.is-opening .welcome {
+            opacity: 0;
+            transform: scale(0.985);
+        }
+
+        .page.is-opening .door-panel.left { transform: translateX(0); }
+        .page.is-opening .door-panel.right { transform: translateX(0); }
+        .page.is-opening.is-exiting .door-panel.left { transform: translateX(-102%); }
+        .page.is-opening.is-exiting .door-panel.right { transform: translateX(102%); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .door-panel, .welcome, .welcome-content, .start-btn { transition: none !important; }
+        }
+
+        @media (max-width: 540px) {
+            header { padding: 16px; }
+            header img { width: 52px; height: 52px; }
+            .welcome { padding-left: 18px; padding-right: 18px; }
+            .question { margin-top: 18px; margin-bottom: 28px; }
+            .start-btn { width: min(100%, 230px); }
+        }
+    </style>
 </head>
-
 <body>
-    <div id="game-app">
+    <div class="page" id="page">
+        <header aria-label="Identitas Universitas Brawijaya">
+            <!-- Aset logo: letakkan kedua file di folder yang sama dengan index.html -->
+            <img src="logo_ub.png" alt="Logo Universitas Brawijaya">
+            <img src="logo_vokasi.png" alt="Logo Pendidikan Vokasi Universitas Brawijaya">
+        </header>
 
-        <!-- ==========================================
-             START SCREEN
-        =========================================== -->
-        <section id="start-screen" class="screen start-screen" aria-labelledby="game-title">
-            <div class="start-container">
-
-                <header class="game-header">
-                    <h1 id="game-title">Petualangan Pancasila</h1>
-                    <p class="game-instruction">
-                        Pilih karakter, masukkan nama, lalu jelajahi map untuk mempelajari keenam materi Pancasila.
-                        Selesaikan seluruh materi untuk membuka portal.
-                    </p>
-                </header>
-
-                <!-- Character Selection -->
-                <section id="character-selection" class="character-selection" aria-labelledby="character-selection-title">
-                    <h2 id="character-selection-title">Pilih Karakter</h2>
-
-                    <div id="character-options" class="character-options">
-
-                        <button
-                            type="button"
-                            class="character-option"
-                            data-character-id="karakter1"
-                            aria-label="Pilih karakter 1"
-                        >
-                            <img
-                                src="assets/karakter1.png"
-                                alt="Karakter 1"
-                                class="character-preview"
-                            >
-                            <span>Karakter 1</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            class="character-option"
-                            data-character-id="karakter2"
-                            aria-label="Pilih karakter 2"
-                        >
-                            <img
-                                src="assets/karakter2.png"
-                                alt="Karakter 2"
-                                class="character-preview"
-                            >
-                            <span>Karakter 2</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            class="character-option"
-                            data-character-id="karakter3"
-                            aria-label="Pilih karakter 3"
-                        >
-                            <img
-                                src="assets/karakter3.png"
-                                alt="Karakter 3"
-                                class="character-preview"
-                            >
-                            <span>Karakter 3</span>
-                        </button>
-
-                    </div>
-                </section>
-
-                <!-- Custom Avatar -->
-                <section id="custom-avatar-section" class="custom-avatar-section" aria-labelledby="custom-avatar-title">
-                    <h2 id="custom-avatar-title">Gunakan Avatar Sendiri</h2>
-
-                    <div class="avatar-upload-area">
-                        <label for="avatar-upload">Unggah avatar</label>
-
-                        <input
-                            type="file"
-                            id="avatar-upload"
-                            name="avatar-upload"
-                            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/bmp,image/svg+xml"
-                            aria-label="Unggah avatar sendiri"
-                        >
-
-                        <div id="avatar-crop-area" class="avatar-crop-area" aria-label="Area crop avatar">
-                            <div id="avatar-crop-container" class="avatar-crop-container">
-                                <img
-                                    id="avatar-upload-preview"
-                                    src=""
-                                    alt="Preview avatar yang diunggah"
-                                    hidden
-                                >
-                            </div>
-                        </div>
-
-                        <div id="avatar-crop-controls" class="avatar-crop-controls">
-                            <button
-                                type="button"
-                                id="avatar-crop-zoom-out"
-                                aria-label="Perkecil avatar"
-                            >
-                                −
-                            </button>
-
-                            <button
-                                type="button"
-                                id="avatar-crop-reset"
-                                aria-label="Reset posisi dan ukuran avatar"
-                            >
-                                Reset
-                            </button>
-
-                            <button
-                                type="button"
-                                id="avatar-crop-zoom-in"
-                                aria-label="Perbesar avatar"
-                            >
-                                +
-                            </button>
-                        </div>
-
-                        <p id="avatar-upload-info" class="avatar-upload-info">
-                            Gunakan gambar dengan rasio 1:1. PNG transparan dan GIF dapat digunakan.
-                        </p>
-                    </div>
-                </section>
-
-                <!-- Player Name -->
-                <section id="player-name-section" class="player-name-section" aria-labelledby="player-name-title">
-                    <h2 id="player-name-title">Nama Pemain</h2>
-
-                    <label for="player-name">Masukkan nama karakter/pemain</label>
-                    <input
-                        type="text"
-                        id="player-name"
-                        name="player-name"
-                        maxlength="30"
-                        autocomplete="name"
-                        placeholder="Nama pemain"
-                        aria-label="Nama pemain"
-                    >
-                </section>
-
-                <div class="start-action">
-                    <button
-                        type="button"
-                        id="start-game-button"
-                        aria-label="Mulai permainan"
-                    >
-                        Mulai Permainan
-                    </button>
-                </div>
-
+        <main class="welcome" id="welcome" aria-labelledby="welcomeTitle">
+            <div class="welcome-content" id="welcomeContent">
+                <p class="eyebrow">Media Pembelajaran · Pendidikan Vokasi UB</p>
+                <h1 id="welcomeTitle">Selamat Datang</h1>
+                <p class="question">Siap belajar?</p>
+                <button class="start-btn" id="startButton" type="button">Mulai</button>
             </div>
-        </section>
-
-
-        <!-- ==========================================
-             GAME SCREEN
-        =========================================== -->
-        <main id="game-screen" class="screen game-screen" hidden>
-
-            <!-- Game HUD -->
-            <header id="game-hud" class="game-hud">
-
-                <div id="player-info" class="player-info">
-                    <span id="hud-player-name" class="hud-player-name"></span>
-                </div>
-
-                <div id="progress-container" class="progress-container" aria-label="Progress materi">
-                    <span>Materi:</span>
-                    <strong id="progress-count">0/6</strong>
-                </div>
-
-                <div id="game-controls" class="game-controls">
-                    <button
-                        type="button"
-                        id="menu-button"
-                        aria-label="Kembali ke menu utama"
-                    >
-                        Menu
-                    </button>
-                </div>
-
-            </header>
-
-
-            <!-- Camera Viewport -->
-            <section
-                id="game-viewport"
-                class="game-viewport"
-                aria-label="Area permainan"
-                tabindex="0"
-            >
-
-                <!-- World larger than viewport -->
-                <div id="game-world" class="game-world">
-
-                    <!-- ==================================
-                         PLAYER
-                    =================================== -->
-                    <div
-                        id="player"
-                        class="player"
-                        data-position-x="0"
-                        data-position-y="0"
-                        aria-label="Karakter pemain"
-                    >
-                        <div id="player-name-label" class="player-name-label"></div>
-
-                        <img
-                            id="player-avatar"
-                            class="player-avatar"
-                            src=""
-                            alt="Avatar pemain"
-                        >
-                    </div>
-
-
-                    <!-- ==================================
-                         MATERIAL 1
-                    =================================== -->
-                    <article
-                        id="materi-1"
-                        class="material-area locked"
-                        data-material-id="1"
-                        data-status="locked"
-                        aria-label="Materi 1: Pancasila Dalam Kajian Sejarah"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">1</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila Dalam Kajian Sejarah</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="1"
-                            aria-label="Buka materi 1"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         MATERIAL 2
-                    =================================== -->
-                    <article
-                        id="materi-2"
-                        class="material-area locked"
-                        data-material-id="2"
-                        data-status="locked"
-                        aria-label="Materi 2: Pancasila sebagai Sistem Filsafat"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">2</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila sebagai Sistem Filsafat</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="2"
-                            aria-label="Buka materi 2"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         MATERIAL 3
-                    =================================== -->
-                    <article
-                        id="materi-3"
-                        class="material-area locked"
-                        data-material-id="3"
-                        data-status="locked"
-                        aria-label="Materi 3: Pancasila sebagai Ideologi"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">3</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila sebagai Ideologi</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="3"
-                            aria-label="Buka materi 3"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         MATERIAL 4
-                    =================================== -->
-                    <article
-                        id="materi-4"
-                        class="material-area locked"
-                        data-material-id="4"
-                        data-status="locked"
-                        aria-label="Materi 4: Pancasila sebagai Dasar Negara"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">4</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila sebagai Dasar Negara</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="4"
-                            aria-label="Buka materi 4"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         MATERIAL 5
-                    =================================== -->
-                    <article
-                        id="materi-5"
-                        class="material-area locked"
-                        data-material-id="5"
-                        data-status="locked"
-                        aria-label="Materi 5: Pancasila sebagai Sistem Etika"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">5</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila sebagai Sistem Etika</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="5"
-                            aria-label="Buka materi 5"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         MATERIAL 6
-                    =================================== -->
-                    <article
-                        id="materi-6"
-                        class="material-area locked"
-                        data-material-id="6"
-                        data-status="locked"
-                        aria-label="Materi 6: Pancasila dan IPTEK"
-                    >
-                        <div class="material-object">
-                            <span class="material-number">6</span>
-                        </div>
-
-                        <div class="material-label">
-                            <h2>Pancasila dan IPTEK</h2>
-                            <span class="material-status">Terkunci</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="material-open-button"
-                            data-material-id="6"
-                            aria-label="Buka materi 6"
-                        >
-                            Buka Materi
-                        </button>
-                    </article>
-
-
-                    <!-- ==================================
-                         PORTAL
-                    =================================== -->
-                    <section
-                        id="portal"
-                        class="portal locked"
-                        data-status="locked"
-                        aria-label="Portal menuju Quizizz"
-                    >
-                        <div id="portal-object" class="portal-object">
-                            <span class="portal-status">Terkunci</span>
-                        </div>
-
-                        <div class="portal-label">
-                            <h2>Portal</h2>
-                            <p id="portal-description">
-                                Selesaikan seluruh materi untuk membuka portal.
-                            </p>
-                        </div>
-
-                        <button
-                            type="button"
-                            id="portal-button"
-                            aria-label="Buka portal"
-                            disabled
-                        >
-                            Portal Terkunci
-                        </button>
-                    </section>
-
-                </div>
-            </section>
-
-
-            <!-- Optional Mobile Camera Controls -->
-            <nav id="camera-controls" class="camera-controls" aria-label="Kontrol kamera">
-                <button
-                    type="button"
-                    id="camera-up"
-                    aria-label="Geser kamera ke atas"
-                    data-camera-direction="up"
-                >
-                    ↑
-                </button>
-
-                <button
-                    type="button"
-                    id="camera-left"
-                    aria-label="Geser kamera ke kiri"
-                    data-camera-direction="left"
-                >
-                    ←
-                </button>
-
-                <button
-                    type="button"
-                    id="camera-center"
-                    aria-label="Kembalikan kamera ke karakter"
-                    data-camera-direction="center"
-                >
-                    ●
-                </button>
-
-                <button
-                    type="button"
-                    id="camera-right"
-                    aria-label="Geser kamera ke kanan"
-                    data-camera-direction="right"
-                >
-                    →
-                </button>
-
-                <button
-                    type="button"
-                    id="camera-down"
-                    aria-label="Geser kamera ke bawah"
-                    data-camera-direction="down"
-                >
-                    ↓
-                </button>
-            </nav>
-
         </main>
 
-
-        <!-- ==========================================
-             MATERIAL MODAL
-        =========================================== -->
-        <div
-            id="material-modal"
-            class="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="material-modal-title"
-            hidden
-        >
-            <div class="modal-overlay" data-modal-close="material"></div>
-
-            <div class="modal-content material-modal-content">
-
-                <header class="modal-header">
-                    <div>
-                        <span id="material-modal-number" class="material-modal-number"></span>
-                        <h2 id="material-modal-title"></h2>
-                    </div>
-
-                    <button
-                        type="button"
-                        id="material-modal-close"
-                        class="modal-close-button"
-                        aria-label="Tutup materi"
-                    >
-                        ×
-                    </button>
-                </header>
-
-                <div id="material-modal-body" class="material-modal-body">
-
-                    <section id="material-summary-section" class="material-summary-section">
-                        <h3>Rangkuman</h3>
-                        <p id="material-summary"></p>
-                    </section>
-
-                    <section id="material-points-section" class="material-points-section">
-                        <h3>Poin-Poin Penting</h3>
-                        <ul id="material-points"></ul>
-                    </section>
-
-                </div>
-
-                <footer class="modal-footer">
-                    <div
-                        id="material-completion-indicator"
-                        class="material-completion-indicator"
-                        aria-live="polite"
-                    >
-                        Materi belum selesai
-                    </div>
-
-                    <button
-                        type="button"
-                        id="material-complete-button"
-                        aria-label="Tandai materi sebagai selesai"
-                    >
-                        Tandai Selesai
-                    </button>
-                </footer>
-
-            </div>
+        <!-- Dua panel ini menciptakan ilusi pintu yang bergerak saat tombol Mulai ditekan. -->
+        <div class="door" aria-hidden="true">
+            <div class="door-panel left"></div>
+            <div class="door-panel right"></div>
         </div>
 
-
-        <!-- ==========================================
-             NOTIFICATION / TOAST
-        =========================================== -->
-        <div
-            id="notification"
-            class="notification"
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"
-            hidden
-        >
-            <div id="notification-content">
-                <h2 id="notification-title"></h2>
-                <p id="notification-message"></p>
-            </div>
-
-            <button
-                type="button"
-                id="notification-close"
-                aria-label="Tutup notifikasi"
-            >
-                ×
-            </button>
-        </div>
-
-
-        <!-- ==========================================
-             GAME INSTRUCTION MODAL
-        =========================================== -->
-        <div
-            id="instruction-modal"
-            class="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="instruction-modal-title"
-            hidden
-        >
-            <div class="modal-overlay" data-modal-close="instruction"></div>
-
-            <div class="modal-content instruction-modal-content">
-
-                <header class="modal-header">
-                    <h2 id="instruction-modal-title">Petunjuk Permainan</h2>
-
-                    <button
-                        type="button"
-                        id="instruction-modal-close"
-                        class="modal-close-button"
-                        aria-label="Tutup petunjuk permainan"
-                    >
-                        ×
-                    </button>
-                </header>
-
-                <div id="instruction-modal-body" class="instruction-modal-body">
-                    <p>
-                        Gerakkan karakter menuju lokasi yang ingin dikunjungi dengan mengklik atau mengetuk area permainan.
-                    </p>
-
-                    <p>
-                        Jelajahi map dan pelajari keenam materi Pancasila.
-                    </p>
-
-                    <p>
-                        Setelah keenam materi selesai dipelajari, portal akan terbuka.
-                    </p>
-                </div>
-
-                <footer class="modal-footer">
-                    <button
-                        type="button"
-                        id="instruction-understand-button"
-                        aria-label="Saya mengerti petunjuk permainan"
-                    >
-                        Saya Mengerti
-                    </button>
-                </footer>
-
-            </div>
-        </div>
-
-
-        <!-- ==========================================
-             MENU CONFIRMATION MODAL
-        =========================================== -->
-        <div
-            id="menu-confirmation-modal"
-            class="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="menu-confirmation-title"
-            hidden
-        >
-            <div class="modal-overlay" data-modal-close="menu-confirmation"></div>
-
-            <div class="modal-content menu-confirmation-content">
-
-                <header class="modal-header">
-                    <h2 id="menu-confirmation-title">Kembali ke Menu</h2>
-
-                    <button
-                        type="button"
-                        id="menu-confirmation-close"
-                        class="modal-close-button"
-                        aria-label="Tutup konfirmasi"
-                    >
-                        ×
-                    </button>
-                </header>
-
-                <div class="menu-confirmation-body">
-                    <p>
-                        Apakah Anda ingin kembali ke menu utama?
-                    </p>
-                </div>
-
-                <footer class="modal-footer">
-                    <button
-                        type="button"
-                        id="menu-cancel-button"
-                        aria-label="Batal kembali ke menu"
-                    >
-                        Batal
-                    </button>
-
-                    <button
-                        type="button"
-                        id="menu-confirm-button"
-                        aria-label="Konfirmasi kembali ke menu"
-                    >
-                        Kembali ke Menu
-                    </button>
-                </footer>
-
-            </div>
-        </div>
-
-
-        <!-- ==========================================
-             MATERIAL DATA
-             Konten materi dipertahankan sesuai materi
-        =========================================== -->
-
-        <template id="material-data-1">
-            <article data-material-id="1">
-                <h2>Pancasila Dalam Kajian Sejarah</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila terbentuk melalui proses sejarah panjang dan kemudian disahkan sebagai dasar negara Indonesia.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>29 Mei–1 Juni 1945: Sidang BPUPK I membahas dasar negara.</li>
-                        <li>1 Juni 1945: Soekarno memperkenalkan istilah Pancasila.</li>
-                        <li>10–17 Juli 1945: Pembahasan dan perumusan Piagam Jakarta.</li>
-                        <li>18 Agustus 1945: Pancasila disahkan sebagai dasar negara dalam UUD 1945.</li>
-                        <li>Tokoh utama: Muhammad Yamin, Soepomo, dan Soekarno.</li>
-                        <li>Perjalanan Pancasila: Purbakala → Hindu-Buddha → Islam → Kolonialisme → BPUPK → Orde Lama → Orde Baru → Reformasi.</li>
-                        <li>Tantangan saat ini: korupsi, intoleransi, radikalisme, hoaks, dan politik identitas.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
-
-        <template id="material-data-2">
-            <article data-material-id="2">
-                <h2>Pancasila sebagai Sistem Filsafat</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila merupakan sistem filsafat karena kelima silanya saling berhubungan dan menjadi dasar pemikiran kehidupan bangsa.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>Filsafat = berpikir radikal, sistematis, menyeluruh, dan logis.</li>
-                        <li>Pancasila merupakan sistem yang utuh, bukan kumpulan nilai yang terpisah.</li>
-                        <li>Lima sila memiliki hubungan hierarkis-piramidal dan saling mengisi.</li>
-                        <li>Filsafat Pancasila mencakup: Ontologi → hakikat; Epistemologi → cara memperoleh pengetahuan; Aksiologi → nilai/kegunaan.</li>
-                        <li>Pancasila menjadi pandangan hidup dan pedoman dalam kehidupan sehari-hari.</li>
-                        <li>Nilai Pancasila berasal dari budaya, agama, dan pengalaman sejarah bangsa Indonesia.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
-
-        <template id="material-data-3">
-            <article data-material-id="3">
-                <h2>Pancasila sebagai Ideologi</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila merupakan ideologi terbuka yang menjadi jalan tengah antara berbagai ideologi dan menyesuaikan penerapannya dengan perkembangan zaman.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>Ideologi = seperangkat nilai, gagasan, dan cita-cita yang menjadi pedoman.</li>
-                        <li>Pancasila adalah ideologi terbuka.</li>
-                        <li>Nilai dasar tetap, tetapi penerapannya dapat menyesuaikan perkembangan zaman.</li>
-                        <li>Menggabungkan nilai universal seperti HAM, keadilan, dan demokrasi dengan gotong royong dan toleransi.</li>
-                        <li>Menjaga keseimbangan antara kebebasan individu dan kepentingan bersama.</li>
-                        <li>Tantangan: radikalisme, disinformasi, kapitalisme global, dan politik identitas.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
-
-        <template id="material-data-4">
-            <article data-material-id="4">
-                <h2>Pancasila sebagai Dasar Negara</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila merupakan dasar negara, sumber dari segala sumber hukum, dan landasan penyelenggaraan negara.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>Pancasila menjadi sumber dari segala sumber hukum.</li>
-                        <li>Menjadi cita hukum dan landasan pembangunan nasional.</li>
-                        <li>Pancasila tercantum dalam Pembukaan UUD 1945 Alinea IV.</li>
-                        <li>Hubungan dengan UUD 1945: Formal: tercantum dalam Pembukaan UUD 1945. Material: menjadi isi pokok/fundamental Pembukaan UUD 1945.</li>
-                        <li>Pancasila diterapkan dalam bidang politik, ekonomi, sosial budaya, serta pertahanan dan keamanan.</li>
-                        <li>Kedudukan Pancasila tetap menjadi dasar negara meskipun UUD 1945 mengalami amandemen.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
-
-        <template id="material-data-5">
-            <article data-material-id="5">
-                <h2>Pancasila sebagai Sistem Etika</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila sebagai sistem etika menjadi pedoman untuk menentukan baik-buruk dan benar-salah dalam kehidupan bermasyarakat dan bernegara.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>Etika: pemikiran tentang baik-buruk dan benar-salah.</li>
-                        <li>Moral: nilai dan norma yang menjadi pedoman perilaku.</li>
-                        <li>Etiket: aturan sopan santun.</li>
-                        <li>Hubungan: Etika → Moral → Etiket.</li>
-                        <li>Aliran etika: Hedonisme, Utilitarianisme, Deontologi, Etika kebajikan.</li>
-                        <li>Etika Pancasila menggabungkan nilai religius, kemanusiaan, kebangsaan, demokrasi, dan keadilan.</li>
-                        <li>Pancasila menjadi pedoman menghadapi intoleransi, diskriminasi, konflik, korupsi, dan ketidakadilan.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
-
-        <template id="material-data-6">
-            <article data-material-id="6">
-                <h2>Pancasila dan IPTEK</h2>
-
-                <section>
-                    <h3>Rangkuman</h3>
-                    <p>Pancasila menjadi pedoman nilai dan moral agar perkembangan IPTEK tetap berorientasi pada manusia dan kepentingan masyarakat.</p>
-                </section>
-
-                <section>
-                    <h3>Poin-Poin Penting</h3>
-                    <ul>
-                        <li>IPTEK memberikan manfaat sekaligus risiko.</li>
-                        <li>IPTEK membutuhkan nilai karena penggunaannya dipengaruhi kepentingan manusia.</li>
-                        <li>Pancasila sebagai filter IPTEK: Sila 1: sesuai moral. Sila 2: menjaga martabat manusia. Sila 3: memperkuat persatuan. Sila 4: bersifat inklusif. Sila 5: manfaatnya harus adil.</li>
-                        <li>Contoh isu: AI, Big Data, privasi, diskriminasi algoritma, media sosial, dan disinformasi.</li>
-                        <li>Intinya: IPTEK harus memanusiakan manusia, bukan merugikan manusia.</li>
-                    </ul>
-                </section>
-            </article>
-        </template>
-
+        <!--
+            AUDIO:
+            Brief awal menuliskan [sound.png] sebagai placeholder aset suara.
+            Browser hanya dapat memutar file audio yang benar, misalnya .mp3/.wav/.ogg.
+            Ganti satu nilai di bawah ini dengan path file audio Anda.
+        -->
+        <audio id="transitionSound" preload="auto"></audio>
     </div>
+
+    <script>
+        // Ganti path ini saja sesuai file audio Anda.
+        const SOUND_PATH = 'sound.mp3';
+        const NEXT_PAGE = 'menu.html';
+        const TRANSITION_MS = 780;
+
+        const page = document.getElementById('page');
+        const startButton = document.getElementById('startButton');
+        const transitionSound = document.getElementById('transitionSound');
+        transitionSound.src = SOUND_PATH;
+
+        let started = false;
+
+        startButton.addEventListener('click', () => {
+            if (started) return;
+            started = true;
+
+            // Audio hanya dimulai setelah interaksi pengguna sehingga tidak bergantung pada autoplay.
+            transitionSound.currentTime = 0;
+            transitionSound.play().catch(() => {
+                // Jika file belum tersedia atau format belum cocok, transisi tetap berjalan.
+            });
+
+            page.classList.add('is-opening');
+
+            window.setTimeout(() => {
+                transitionSound.pause();
+                transitionSound.currentTime = 0;
+                page.classList.add('is-exiting');
+            }, 400);
+
+            window.setTimeout(() => {
+                window.location.href = NEXT_PAGE;
+            }, TRANSITION_MS);
+        });
+    </script>
 </body>
 </html>
