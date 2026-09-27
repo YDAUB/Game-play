@@ -1,1 +1,1382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="Game edukasi interaktif 2D untuk mempelajari rangkuman materi Pancasila."
+    >
+
+    <title>Jelajah Pancasila — Game Edukasi</title>
+
+    <!-- Seluruh styling berada di style.css -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================================
+         APP ROOT
+         ========================================================= -->
+    <main id="app" class="app">
+
+        <!-- =====================================================
+             1. LANDING SCREEN
+             ===================================================== -->
+        <section
+            id="landing-screen"
+            class="screen screen--landing"
+            aria-labelledby="game-title"
+        >
+            <div class="landing-background" aria-hidden="true">
+                <div class="decorative-shape decorative-shape--one"></div>
+                <div class="decorative-shape decorative-shape--two"></div>
+                <div class="decorative-shape decorative-shape--three"></div>
+                <div class="knowledge-orbit">
+                    <span class="orbit-item orbit-item--book">▰</span>
+                    <span class="orbit-item orbit-item--star">✦</span>
+                    <span class="orbit-item orbit-item--light">◉</span>
+                </div>
+            </div>
+
+            <div class="landing-layout">
+
+                <div class="landing-content">
+                    <div class="game-badge">
+                        <span class="game-badge__dot" aria-hidden="true"></span>
+                        GAME EDUKASI 2D
+                    </div>
+
+                    <h1 id="game-title" class="game-title">
+                        Jelajah Pancasila
+                    </h1>
+
+                    <p class="game-subtitle">
+                        Petualangan interaktif untuk mengenal dan memahami
+                        rangkuman materi Pancasila dengan cara yang lebih seru.
+                    </p>
+
+                    <div class="landing-actions">
+                        <button
+                            id="start-game-btn"
+                            class="button button--primary button--large"
+                            type="button"
+                        >
+                            <span class="button__icon" aria-hidden="true">▶</span>
+                            Mulai Petualangan
+                        </button>
+                    </div>
+
+                    <div class="landing-info" aria-label="Informasi game">
+                        <div class="landing-info__item">
+                            <span class="landing-info__icon" aria-hidden="true">
+                                ◈
+                            </span>
+                            <span>6 Materi</span>
+                        </div>
+
+                        <div class="landing-info__item">
+                            <span class="landing-info__icon" aria-hidden="true">
+                                ◆
+                            </span>
+                            <span>Single Player</span>
+                        </div>
+
+                        <div class="landing-info__item">
+                            <span class="landing-info__icon" aria-hidden="true">
+                                ✦
+                            </span>
+                            <span>Quizizz</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="landing-visual"
+                    aria-label="Ilustrasi perjalanan belajar"
+                >
+                    <div class="learning-scene">
+                        <div class="scene-sun" aria-hidden="true"></div>
+
+                        <div class="scene-cloud scene-cloud--one" aria-hidden="true"></div>
+                        <div class="scene-cloud scene-cloud--two" aria-hidden="true"></div>
+
+                        <div class="scene-path" aria-hidden="true"></div>
+
+                        <div class="scene-land scene-land--back" aria-hidden="true"></div>
+                        <div class="scene-land scene-land--front" aria-hidden="true"></div>
+
+                        <div class="scene-building" aria-hidden="true">
+                            <div class="building-roof"></div>
+                            <div class="building-body">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <div class="scene-book" aria-hidden="true">
+                            <div class="book-page book-page--left"></div>
+                            <div class="book-page book-page--right"></div>
+                        </div>
+
+                        <div class="scene-flag" aria-hidden="true">
+                            <div class="flag-pole"></div>
+                            <div class="flag-cloth"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+             2. PLAYER NAME SCREEN
+             ===================================================== -->
+        <section
+            id="name-screen"
+            class="screen screen--form"
+            aria-labelledby="name-screen-title"
+            hidden
+        >
+            <div class="form-card">
+
+                <div class="form-card__icon" aria-hidden="true">
+                    ✦
+                </div>
+
+                <div class="form-card__header">
+                    <span class="eyebrow">LANGKAH 01</span>
+
+                    <h2 id="name-screen-title">
+                        Siapa nama kamu?
+                    </h2>
+
+                    <p>
+                        Masukkan nama yang akan digunakan selama petualangan.
+                    </p>
+                </div>
+
+                <form
+                    id="player-name-form"
+                    class="player-form"
+                    novalidate
+                >
+                    <div class="form-field">
+                        <label for="player-name">
+                            Nama Pemain
+                        </label>
+
+                        <input
+                            id="player-name"
+                            name="playerName"
+                            type="text"
+                            placeholder="Masukkan nama kamu"
+                            maxlength="20"
+                            autocomplete="nickname"
+                            required
+                            aria-describedby="player-name-help player-name-error"
+                        >
+
+                        <div
+                            id="player-name-help"
+                            class="form-help"
+                        >
+                            Maksimal 20 karakter.
+                        </div>
+
+                        <div
+                            id="player-name-error"
+                            class="form-error"
+                            role="alert"
+                            aria-live="polite"
+                            hidden
+                        ></div>
+                    </div>
+
+                    <button
+                        id="name-continue-btn"
+                        class="button button--primary button--full"
+                        type="submit"
+                    >
+                        Lanjut
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+             3. CHARACTER SELECTION SCREEN
+             ===================================================== -->
+        <section
+            id="character-screen"
+            class="screen screen--character"
+            aria-labelledby="character-screen-title"
+            hidden
+        >
+            <div class="character-selection">
+
+                <header class="section-header">
+                    <span class="eyebrow">LANGKAH 02</span>
+
+                    <h2 id="character-screen-title">
+                        Pilih Karaktermu
+                    </h2>
+
+                    <p>
+                        Gunakan karakter bawaan atau tampilkan dirimu sendiri
+                        sebagai karakter permainan.
+                    </p>
+                </header>
+
+
+                <!-- CHARACTER BUILT-IN -->
+                <section
+                    class="character-method"
+                    aria-labelledby="preset-character-title"
+                >
+                    <div class="character-method__header">
+                        <div>
+                            <span class="section-label">KARAKTER BAWAAN</span>
+
+                            <h3 id="preset-character-title">
+                                Pilih salah satu karakter
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div
+                        id="preset-character-list"
+                        class="character-grid"
+                        role="radiogroup"
+                        aria-label="Pilihan karakter bawaan"
+                    >
+
+                        <button
+                            id="character-option-1"
+                            class="character-card"
+                            type="button"
+                            data-character-type="preset"
+                            data-character-id="1"
+                            data-character-src="karakter 1.png"
+                            role="radio"
+                            aria-checked="false"
+                        >
+                            <span class="character-card__check" aria-hidden="true">
+                                ✓
+                            </span>
+
+                            <span class="character-card__image-wrapper">
+                                <img
+                                    class="character-card__image"
+                                    src="karakter 1.png"
+                                    alt="Karakter bawaan 1"
+                                >
+                            </span>
+
+                            <span class="character-card__name">
+                                Karakter 1
+                            </span>
+                        </button>
+
+
+                        <button
+                            id="character-option-2"
+                            class="character-card"
+                            type="button"
+                            data-character-type="preset"
+                            data-character-id="2"
+                            data-character-src="karakter 2.png"
+                            role="radio"
+                            aria-checked="false"
+                        >
+                            <span class="character-card__check" aria-hidden="true">
+                                ✓
+                            </span>
+
+                            <span class="character-card__image-wrapper">
+                                <img
+                                    class="character-card__image"
+                                    src="karakter 2.png"
+                                    alt="Karakter bawaan 2"
+                                >
+                            </span>
+
+                            <span class="character-card__name">
+                                Karakter 2
+                            </span>
+                        </button>
+
+
+                        <button
+                            id="character-option-3"
+                            class="character-card"
+                            type="button"
+                            data-character-type="preset"
+                            data-character-id="3"
+                            data-character-src="karakter 3.png"
+                            role="radio"
+                            aria-checked="false"
+                        >
+                            <span class="character-card__check" aria-hidden="true">
+                                ✓
+                            </span>
+
+                            <span class="character-card__image-wrapper">
+                                <img
+                                    class="character-card__image"
+                                    src="karakter 3.png"
+                                    alt="Karakter bawaan 3"
+                                >
+                            </span>
+
+                            <span class="character-card__name">
+                                Karakter 3
+                            </span>
+                        </button>
+
+                    </div>
+                </section>
+
+
+                <!-- CUSTOM PHOTO -->
+                <section
+                    class="character-method character-method--custom"
+                    aria-labelledby="custom-character-title"
+                >
+                    <div class="character-method__header">
+                        <div>
+                            <span class="section-label">FOTO SENDIRI</span>
+
+                            <h3 id="custom-character-title">
+                                Gunakan foto kamu
+                            </h3>
+                        </div>
+
+                        <span class="optional-label">
+                            OPSIONAL
+                        </span>
+                    </div>
+
+                    <div class="custom-character-panel">
+
+                        <div
+                            id="custom-character-preview"
+                            class="custom-character-preview"
+                        >
+                            <div
+                                id="custom-character-placeholder"
+                                class="custom-character-placeholder"
+                            >
+                                <span
+                                    class="custom-character-placeholder__icon"
+                                    aria-hidden="true"
+                                >
+                                    ↑
+                                </span>
+
+                                <span>
+                                    Belum ada foto
+                                </span>
+                            </div>
+
+                            <img
+                                id="custom-character-image"
+                                class="custom-character-image"
+                                src=""
+                                alt="Preview foto karakter sendiri"
+                                hidden
+                            >
+                        </div>
+
+                        <div class="custom-character-actions">
+
+                            <p class="custom-character-description">
+                                Upload foto dari perangkatmu. Foto akan
+                                diproses melalui crop 1:1 sebelum digunakan
+                                sebagai karakter.
+                            </p>
+
+                            <label
+                                for="character-photo-input"
+                                id="upload-photo-btn"
+                                class="button button--secondary"
+                            >
+                                <span aria-hidden="true">↑</span>
+                                Upload Foto Sendiri
+                            </label>
+
+                            <input
+                                id="character-photo-input"
+                                name="characterPhoto"
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp"
+                                hidden
+                            >
+
+                            <div
+                                id="photo-upload-error"
+                                class="form-error"
+                                role="alert"
+                                aria-live="polite"
+                                hidden
+                            ></div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- CHARACTER CONFIRM -->
+                <div class="character-footer">
+                    <div
+                        id="character-selection-error"
+                        class="form-error"
+                        role="alert"
+                        aria-live="polite"
+                        hidden
+                    ></div>
+
+                    <button
+                        id="confirm-character-btn"
+                        class="button button--primary button--large"
+                        type="button"
+                        disabled
+                    >
+                        Gunakan Karakter
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+             4. PHOTO CROP MODAL
+             ===================================================== -->
+        <div
+            id="crop-modal"
+            class="modal modal--crop"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="crop-modal-title"
+            hidden
+        >
+            <div class="modal__backdrop" data-modal-close="crop-modal"></div>
+
+            <div class="modal__panel crop-panel">
+
+                <header class="modal__header">
+                    <div>
+                        <span class="eyebrow">EDIT FOTO</span>
+
+                        <h2 id="crop-modal-title">
+                            Sesuaikan Foto Karakter
+                        </h2>
+
+                        <p>
+                            Atur posisi dan ukuran foto dalam area crop 1:1.
+                        </p>
+                    </div>
+
+                    <button
+                        id="crop-modal-close"
+                        class="modal__close"
+                        type="button"
+                        aria-label="Tutup editor crop"
+                        data-modal-close="crop-modal"
+                    >
+                        ×
+                    </button>
+                </header>
+
+
+                <div class="crop-editor">
+
+                    <div
+                        id="crop-viewport"
+                        class="crop-viewport"
+                        aria-label="Area crop foto 1 banding 1"
+                    >
+                        <div
+                            id="crop-image-wrapper"
+                            class="crop-image-wrapper"
+                        >
+                            <img
+                                id="crop-image"
+                                class="crop-image"
+                                src=""
+                                alt="Foto yang sedang dipotong"
+                                draggable="false"
+                            >
+                        </div>
+
+                        <div
+                            class="crop-overlay"
+                            aria-hidden="true"
+                        ></div>
+
+                        <div
+                            class="crop-grid"
+                            aria-hidden="true"
+                        >
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+
+                    <div class="crop-controls">
+
+                        <div class="crop-zoom-control">
+                            <label for="crop-zoom">
+                                Zoom
+                            </label>
+
+                            <div class="range-control">
+                                <button
+                                    id="crop-zoom-out"
+                                    class="range-button"
+                                    type="button"
+                                    aria-label="Perkecil foto"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    id="crop-zoom"
+                                    type="range"
+                                    min="1"
+                                    max="3"
+                                    step="0.01"
+                                    value="1"
+                                    aria-label="Tingkat zoom foto"
+                                >
+
+                                <button
+                                    id="crop-zoom-in"
+                                    class="range-button"
+                                    type="button"
+                                    aria-label="Perbesar foto"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="crop-control-hint">
+                            <span aria-hidden="true">↔</span>
+                            Geser foto untuk mengatur posisi
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <footer class="modal__footer">
+                    <button
+                        id="crop-reset-btn"
+                        class="button button--ghost"
+                        type="button"
+                    >
+                        Reset
+                    </button>
+
+                    <div class="modal__footer-actions">
+                        <button
+                            id="crop-cancel-btn"
+                            class="button button--secondary"
+                            type="button"
+                        >
+                            Batal
+                        </button>
+
+                        <button
+                            id="crop-use-btn"
+                            class="button button--primary"
+                            type="button"
+                        >
+                            Gunakan Foto
+                        </button>
+                    </div>
+                </footer>
+
+            </div>
+        </div>
+
+
+        <!-- =====================================================
+             5. GAME SCREEN
+             ===================================================== -->
+        <section
+            id="game-screen"
+            class="screen screen--game"
+            aria-label="Area permainan"
+            hidden
+        >
+
+            <!-- GAME HEADER / HUD -->
+            <header
+                id="game-hud"
+                class="game-hud"
+            >
+
+                <div class="hud-left">
+
+                    <div
+                        id="player-hud"
+                        class="hud-player"
+                    >
+                        <div
+                            id="hud-player-avatar"
+                            class="hud-player__avatar"
+                        >
+                            <img
+                                id="hud-player-avatar-image"
+                                src=""
+                                alt=""
+                            >
+                        </div>
+
+                        <div class="hud-player__info">
+                            <span class="hud-player__label">
+                                PEMAIN
+                            </span>
+
+                            <strong
+                                id="hud-player-name"
+                                class="hud-player__name"
+                            >
+                                -
+                            </strong>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="hud-center">
+
+                    <div
+                        id="material-progress"
+                        class="material-progress"
+                        aria-label="Progress materi"
+                    >
+                        <div class="material-progress__top">
+                            <span class="material-progress__label">
+                                MATERI
+                            </span>
+
+                            <strong
+                                id="material-progress-text"
+                                class="material-progress__count"
+                            >
+                                0 / 6
+                            </strong>
+                        </div>
+
+                        <div
+                            class="material-progress__track"
+                            role="progressbar"
+                            aria-valuemin="0"
+                            aria-valuemax="6"
+                            aria-valuenow="0"
+                            aria-label="Progress materi yang telah dibaca"
+                        >
+                            <div
+                                id="material-progress-bar"
+                                class="material-progress__bar"
+                            ></div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="hud-right">
+
+                    <button
+                        id="help-btn"
+                        class="hud-button"
+                        type="button"
+                        aria-label="Buka petunjuk permainan"
+                        title="Petunjuk"
+                    >
+                        <span aria-hidden="true">?</span>
+                        <span class="hud-button__text">
+                            Petunjuk
+                        </span>
+                    </button>
+
+                    <button
+                        id="exit-game-btn"
+                        class="hud-button hud-button--danger"
+                        type="button"
+                        aria-label="Keluar dari permainan"
+                        title="Keluar"
+                    >
+                        <span aria-hidden="true">×</span>
+                        <span class="hud-button__text">
+                            Keluar
+                        </span>
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- GAME CANVAS / ENGINE CONTAINER -->
+            <div
+                id="game-container"
+                class="game-container"
+                tabindex="0"
+                aria-label="Dunia permainan 2D"
+            >
+                <!-- game.js akan merender dunia permainan di sini -->
+
+                <div
+                    id="game-loading"
+                    class="game-loading"
+                    aria-live="polite"
+                >
+                    <div class="game-loading__spinner"></div>
+
+                    <p>
+                        Menyiapkan dunia permainan...
+                    </p>
+                </div>
+            </div>
+
+
+            <!-- INTERACTION INDICATOR -->
+            <div
+                id="interaction-indicator"
+                class="interaction-indicator"
+                role="status"
+                aria-live="polite"
+                hidden
+            >
+                <span
+                    id="interaction-key"
+                    class="interaction-indicator__key"
+                >
+                    E
+                </span>
+
+                <span
+                    id="interaction-text"
+                    class="interaction-indicator__text"
+                >
+                    Baca Materi
+                </span>
+            </div>
+
+
+            <!-- MOBILE CONTROLS -->
+            <div
+                id="mobile-controls"
+                class="mobile-controls"
+                aria-label="Kontrol permainan untuk perangkat sentuh"
+            >
+                <div class="mobile-dpad">
+
+                    <button
+                        id="move-up-btn"
+                        class="mobile-control mobile-control--up"
+                        type="button"
+                        aria-label="Bergerak ke atas"
+                        data-direction="up"
+                    >
+                        ▲
+                    </button>
+
+                    <button
+                        id="move-left-btn"
+                        class="mobile-control mobile-control--left"
+                        type="button"
+                        aria-label="Bergerak ke kiri"
+                        data-direction="left"
+                    >
+                        ◀
+                    </button>
+
+                    <button
+                        id="move-down-btn"
+                        class="mobile-control mobile-control--down"
+                        type="button"
+                        aria-label="Bergerak ke bawah"
+                        data-direction="down"
+                    >
+                        ▼
+                    </button>
+
+                    <button
+                        id="move-right-btn"
+                        class="mobile-control mobile-control--right"
+                        type="button"
+                        aria-label="Bergerak ke kanan"
+                        data-direction="right"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+                <button
+                    id="mobile-interact-btn"
+                    class="mobile-interact"
+                    type="button"
+                    aria-label="Berinteraksi"
+                >
+                    <span class="mobile-interact__key">E</span>
+                    <span>INTERAKSI</span>
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             6. MATERIAL MODAL
+             ===================================================== -->
+        <div
+            id="material-modal"
+            class="modal modal--material"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="material-modal-title"
+            hidden
+        >
+            <div
+                class="modal__backdrop"
+                data-modal-close="material-modal"
+            ></div>
+
+            <article class="modal__panel material-panel">
+
+                <header class="modal__header material-header">
+
+                    <div class="material-header__icon" aria-hidden="true">
+                        ✦
+                    </div>
+
+                    <div class="material-header__content">
+
+                        <span
+                            id="material-modal-label"
+                            class="eyebrow"
+                        >
+                            MATERI
+                        </span>
+
+                        <h2 id="material-modal-title">
+                            Judul Materi
+                        </h2>
+
+                    </div>
+
+                    <button
+                        id="material-modal-close"
+                        class="modal__close"
+                        type="button"
+                        aria-label="Tutup materi"
+                        data-modal-close="material-modal"
+                    >
+                        ×
+                    </button>
+
+                </header>
+
+
+                <div class="material-body">
+
+                    <section
+                        class="material-section"
+                        aria-labelledby="summary-heading"
+                    >
+                        <div class="material-section__title">
+                            <span
+                                class="material-section__number"
+                                aria-hidden="true"
+                            >
+                                01
+                            </span>
+
+                            <h3 id="summary-heading">
+                                Rangkuman
+                            </h3>
+                        </div>
+
+                        <div
+                            id="material-summary"
+                            class="material-content"
+                        >
+                            <!-- Konten dimasukkan melalui game.js -->
+                        </div>
+                    </section>
+
+
+                    <section
+                        class="material-section"
+                        aria-labelledby="important-points-heading"
+                    >
+                        <div class="material-section__title">
+                            <span
+                                class="material-section__number"
+                                aria-hidden="true"
+                            >
+                                02
+                            </span>
+
+                            <h3 id="important-points-heading">
+                                Poin-Poin Penting
+                            </h3>
+                        </div>
+
+                        <div
+                            id="material-points"
+                            class="material-content material-content--points"
+                        >
+                            <!-- Konten dimasukkan melalui game.js -->
+                        </div>
+                    </section>
+
+                </div>
+
+
+                <footer class="modal__footer material-footer">
+
+                    <div class="material-footer__progress">
+                        <span>
+                            Materi
+                        </span>
+
+                        <strong id="material-modal-progress">
+                            1 / 6
+                        </strong>
+                    </div>
+
+                    <div class="modal__footer-actions">
+
+                        <button
+                            id="material-close-btn"
+                            class="button button--secondary"
+                            type="button"
+                        >
+                            Tutup
+                        </button>
+
+                        <button
+                            id="material-next-btn"
+                            class="button button--primary"
+                            type="button"
+                        >
+                            Lanjut
+                            <span aria-hidden="true">→</span>
+                        </button>
+
+                    </div>
+
+                </footer>
+
+            </article>
+        </div>
+
+
+        <!-- =====================================================
+             7. HELP / INSTRUCTION MODAL
+             ===================================================== -->
+        <div
+            id="help-modal"
+            class="modal modal--help"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="help-modal-title"
+            hidden
+        >
+            <div
+                class="modal__backdrop"
+                data-modal-close="help-modal"
+            ></div>
+
+            <article class="modal__panel help-panel">
+
+                <header class="modal__header">
+
+                    <div>
+                        <span class="eyebrow">
+                            PANDUAN
+                        </span>
+
+                        <h2 id="help-modal-title">
+                            Cara Bermain
+                        </h2>
+                    </div>
+
+                    <button
+                        id="help-modal-close"
+                        class="modal__close"
+                        type="button"
+                        aria-label="Tutup petunjuk"
+                        data-modal-close="help-modal"
+                    >
+                        ×
+                    </button>
+
+                </header>
+
+
+                <div class="help-content">
+
+                    <div class="instruction-list">
+
+                        <div class="instruction-item">
+                            <div
+                                class="instruction-item__icon instruction-item__icon--movement"
+                                aria-hidden="true"
+                            >
+                                WASD
+                            </div>
+
+                            <div class="instruction-item__content">
+                                <h3>Bergerak</h3>
+
+                                <p>
+                                    Gunakan tombol WASD atau tombol panah
+                                    untuk bergerak menjelajahi map.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="instruction-item">
+                            <div
+                                class="instruction-item__icon"
+                                aria-hidden="true"
+                            >
+                                E
+                            </div>
+
+                            <div class="instruction-item__content">
+                                <h3>Berinteraksi</h3>
+
+                                <p>
+                                    Dekati titik materi lalu tekan tombol
+                                    E atau tombol interaksi untuk membaca
+                                    materi.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="instruction-item">
+                            <div
+                                class="instruction-item__icon"
+                                aria-hidden="true"
+                            >
+                                6
+                            </div>
+
+                            <div class="instruction-item__content">
+                                <h3>Selesaikan Materi</h3>
+
+                                <p>
+                                    Temukan dan baca seluruh 6 titik materi
+                                    hingga progress mencapai 6 / 6.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="instruction-item">
+                            <div
+                                class="instruction-item__icon"
+                                aria-hidden="true"
+                            >
+                                ★
+                            </div>
+
+                            <div class="instruction-item__content">
+                                <h3>Menuju Area Akhir</h3>
+
+                                <p>
+                                    Setelah seluruh materi selesai dibaca,
+                                    temukan area finish untuk menyelesaikan
+                                    petualangan.
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="instruction-item">
+                            <div
+                                class="instruction-item__icon"
+                                aria-hidden="true"
+                            >
+                                Q
+                            </div>
+
+                            <div class="instruction-item__content">
+                                <h3>Lanjut ke Quizizz</h3>
+
+                                <p>
+                                    Setelah permainan selesai, gunakan tombol
+                                    Quizizz untuk melanjutkan ke evaluasi.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <footer class="modal__footer">
+                    <button
+                        id="help-close-btn"
+                        class="button button--primary"
+                        type="button"
+                    >
+                        Mengerti
+                    </button>
+                </footer>
+
+            </article>
+        </div>
+
+
+        <!-- =====================================================
+             8. EXIT CONFIRMATION MODAL
+             ===================================================== -->
+        <div
+            id="exit-modal"
+            class="modal modal--confirmation"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="exit-modal-title"
+            hidden
+        >
+            <div
+                class="modal__backdrop"
+                data-modal-close="exit-modal"
+            ></div>
+
+            <article class="modal__panel confirmation-panel">
+
+                <div
+                    class="confirmation-icon"
+                    aria-hidden="true"
+                >
+                    !
+                </div>
+
+                <header class="confirmation-header">
+                    <h2 id="exit-modal-title">
+                        Keluar dari permainan?
+                    </h2>
+
+                    <p>
+                        Progress permainan saat ini mungkin akan hilang.
+                        Apakah kamu yakin ingin kembali ke menu?
+                    </p>
+                </header>
+
+                <div class="confirmation-actions">
+
+                    <button
+                        id="cancel-exit-btn"
+                        class="button button--secondary"
+                        type="button"
+                    >
+                        Tetap Bermain
+                    </button>
+
+                    <button
+                        id="confirm-exit-btn"
+                        class="button button--danger"
+                        type="button"
+                    >
+                        Keluar
+                    </button>
+
+                </div>
+
+            </article>
+        </div>
+
+
+        <!-- =====================================================
+             9. FINISH / COMPLETION MODAL
+             ===================================================== -->
+        <div
+            id="finish-modal"
+            class="modal modal--finish"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="finish-modal-title"
+            hidden
+        >
+            <div class="modal__backdrop"></div>
+
+            <article class="modal__panel finish-panel">
+
+                <div
+                    class="finish-celebration"
+                    aria-hidden="true"
+                >
+                    <div class="finish-star finish-star--one">✦</div>
+                    <div class="finish-star finish-star--two">✦</div>
+                    <div class="finish-star finish-star--three">✦</div>
+
+                    <div class="finish-badge">
+                        ✓
+                    </div>
+                </div>
+
+
+                <header class="finish-header">
+
+                    <span class="eyebrow">
+                        PETUALANGAN SELESAI
+                    </span>
+
+                    <h2 id="finish-modal-title">
+                        Semua Materi Telah Selesai!
+                    </h2>
+
+                    <p id="finish-message">
+                        Hebat! Kamu telah menjelajahi seluruh titik materi
+                        dan menyelesaikan perjalanan belajar Pancasila.
+                    </p>
+
+                </header>
+
+
+                <div class="finish-summary">
+
+                    <div class="finish-summary__item">
+                        <span class="finish-summary__label">
+                            PEMAIN
+                        </span>
+
+                        <strong
+                            id="finish-player-name"
+                            class="finish-summary__value"
+                        >
+                            -
+                        </strong>
+                    </div>
+
+                    <div class="finish-summary__item">
+                        <span class="finish-summary__label">
+                            MATERI
+                        </span>
+
+                        <strong class="finish-summary__value">
+                            6 / 6
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="finish-actions">
+
+                    <a
+                        id="quizizz-link"
+                        class="button button--quizizz button--large"
+                        href="[link quizziz di sini]"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <span
+                            class="button__icon"
+                            aria-hidden="true"
+                        >
+                            Q
+                        </span>
+
+                        Lanjut ke Quizizz
+
+                        <span
+                            class="button__arrow"
+                            aria-hidden="true"
+                        >
+                            ↗
+                        </span>
+                    </a>
+
+                    <button
+                        id="return-game-btn"
+                        class="button button--ghost"
+                        type="button"
+                    >
+                        Kembali ke Game
+                    </button>
+
+                </div>
+
+            </article>
+        </div>
+
+
+        <!-- =====================================================
+             10. GENERAL TOAST / NOTIFICATION
+             ===================================================== -->
+        <div
+            id="game-toast"
+            class="game-toast"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            hidden
+        >
+            <span
+                id="game-toast-icon"
+                class="game-toast__icon"
+                aria-hidden="true"
+            >
+                ✓
+            </span>
+
+            <span
+                id="game-toast-message"
+                class="game-toast__message"
+            >
+                Notifikasi
+            </span>
+        </div>
+
+
+        <!-- =====================================================
+             11. SCREEN READER LIVE REGION
+             ===================================================== -->
+        <div
+            id="game-announcer"
+            class="sr-only"
+            aria-live="polite"
+            aria-atomic="true"
+        ></div>
+
+    </main>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+         Seluruh logika game berada di game.js
+         ========================================================= -->
+    <script src="game.js" defer></script>
+
+</body>
+</html>
