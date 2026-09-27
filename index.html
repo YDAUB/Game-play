@@ -3,693 +3,1213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b2a5b">
-  <meta
-    name="description"
-    content="Game edukasi 2D single-player untuk mempelajari rangkuman materi Pancasila secara interaktif."
-  >
-  <title>Jelajah Pancasila — Game Edukasi 2D</title>
+  <meta name="description" content="Game edukasi interaktif tentang pembelajaran Pancasila">
+  <title>Petualangan Pancasila</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <main id="app" class="app-shell">
-    <!-- =========================
-         LANDING / PEMBUKA
-         ========================= -->
-    <section id="landing-screen" class="screen screen--landing" aria-labelledby="game-title">
-      <div class="landing-layout">
-        <div class="landing-copy">
-          <p class="eyebrow">GAME EDUKASI 2D • SINGLE PLAYER</p>
-          <h1 id="game-title">Jelajah Pancasila</h1>
-          <p class="landing-subtitle">
-            Telusuri dunia belajar interaktif, temukan enam titik materi, baca rangkumannya,
-            lalu selesaikan perjalananmu menuju tantangan akhir.
+
+  <main id="game-container" class="game-container">
+
+    <!-- =========================================
+         START / CHARACTER SELECTION SCREEN
+         ========================================= -->
+    <section
+      id="start-screen"
+      class="screen start-screen"
+      aria-labelledby="game-title"
+    >
+      <div class="start-card">
+
+        <header class="start-header">
+          <h1 id="game-title">Petualangan Pancasila</h1>
+          <p class="game-subtitle">
+            Jelajahi dunia pembelajaran Pancasila dan selesaikan seluruh materi.
           </p>
+        </header>
 
-          <div class="landing-actions" aria-label="Aksi halaman pembuka">
-            <button
-              id="start-button"
-              class="button button--primary button--large"
-              type="button"
-              aria-controls="name-screen"
+        <form id="character-form" class="character-form">
+
+          <div class="form-group">
+            <label for="player-name">Nama Pemain</label>
+            <input
+              type="text"
+              id="player-name"
+              name="player-name"
+              placeholder="Masukkan nama kamu"
+              maxlength="30"
+              autocomplete="name"
+              required
             >
-              Mulai Perjalanan
-            </button>
           </div>
 
-          <div class="landing-meta" aria-label="Informasi permainan">
-            <div class="meta-item">
-              <span class="meta-item__value">6</span>
-              <span class="meta-item__label">Titik Materi</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-item__value">2D</span>
-              <span class="meta-item__label">Eksplorasi</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-item__value">1P</span>
-              <span class="meta-item__label">Single Player</span>
-            </div>
-          </div>
-        </div>
+          <fieldset class="character-selection">
+            <legend>Pilih Karakter</legend>
 
-        <div class="landing-visual" aria-hidden="true">
-          <div class="learning-board">
-            <div class="learning-board__header">
-              <span class="learning-board__dot learning-board__dot--blue"></span>
-              <span class="learning-board__dot learning-board__dot--yellow"></span>
-              <span class="learning-board__dot learning-board__dot--white"></span>
-              <span class="learning-board__label">PETA PERJALANAN BELAJAR</span>
-            </div>
+            <div
+              id="character-options"
+              class="character-options"
+              role="radiogroup"
+              aria-label="Pilihan karakter"
+            >
 
-            <div class="learning-board__map">
-              <div class="map-route map-route--one"></div>
-              <div class="map-route map-route--two"></div>
-              <div class="map-route map-route--three"></div>
-
-              <div class="study-point study-point--one">
-                <span class="study-point__icon">01</span>
-              </div>
-              <div class="study-point study-point--two">
-                <span class="study-point__icon">02</span>
-              </div>
-              <div class="study-point study-point--three">
-                <span class="study-point__icon">03</span>
-              </div>
-              <div class="study-point study-point--four">
-                <span class="study-point__icon">04</span>
-              </div>
-              <div class="study-point study-point--five">
-                <span class="study-point__icon">05</span>
-              </div>
-              <div class="study-point study-point--six">
-                <span class="study-point__icon">06</span>
-              </div>
-
-              <div class="learning-board__character">
-                <span class="learning-character__head"></span>
-                <span class="learning-character__body"></span>
-                <span class="learning-character__shadow"></span>
-              </div>
-
-              <div class="learning-board__flag">
-                <span class="learning-board__flag-pole"></span>
-                <span class="learning-board__flag-shape">FINISH</span>
-              </div>
-            </div>
-
-            <div class="learning-board__footer">
-              <span>Explore</span>
-              <span class="learning-board__arrow">→</span>
-              <span>Discover</span>
-              <span class="learning-board__arrow">→</span>
-              <span>Reflect</span>
-            </div>
-          </div>
-
-          <div class="floating-card floating-card--book">
-            <span class="floating-card__icon" aria-hidden="true">▤</span>
-            <span class="floating-card__text">Materi Interaktif</span>
-          </div>
-
-          <div class="floating-card floating-card--compass">
-            <span class="floating-card__icon" aria-hidden="true">✦</span>
-            <span class="floating-card__text">Jelajahi Map</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================
-         NAMA PEMAIN
-         ========================= -->
-    <section id="name-screen" class="screen screen--form" hidden aria-labelledby="name-screen-title">
-      <div class="form-shell">
-        <div class="progress-steps" aria-label="Tahapan persiapan game">
-          <span class="progress-step progress-step--active">1. Nama</span>
-          <span class="progress-step">2. Karakter</span>
-          <span class="progress-step">3. Game</span>
-        </div>
-
-        <div class="form-card">
-          <div class="form-card__header">
-            <p class="eyebrow">IDENTITAS PEMAIN</p>
-            <h2 id="name-screen-title">Siapa yang akan menjelajah?</h2>
-            <p>
-              Masukkan nama yang akan digunakan selama perjalanan. Nama ini juga dapat ditampilkan
-              di atas karakter saat bermain.
-            </p>
-          </div>
-
-          <form id="player-name-form" novalidate>
-            <div class="field-group">
-              <label class="field-label" for="player-name-input">Nama Pemain</label>
-              <input
-                id="player-name-input"
-                class="text-input"
-                name="playerName"
-                type="text"
-                autocomplete="name"
-                maxlength="20"
-                minlength="1"
-                placeholder="Contoh: Fadli"
-                aria-describedby="player-name-help player-name-error"
-                required
-              >
-              <div id="player-name-help" class="field-help">
-                Maksimal 20 karakter. Hindari spasi di awal atau akhir nama.
-              </div>
-              <p id="player-name-error" class="field-error" role="alert" hidden>
-                Nama pemain wajib diisi.
-              </p>
-            </div>
-
-            <div class="form-actions">
-              <button id="name-back-button" class="button button--ghost" type="button">
-                Kembali
-              </button>
-              <button id="name-continue-button" class="button button--primary" type="submit">
-                Lanjut Pilih Karakter
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================
-         PEMILIHAN KARAKTER
-         ========================= -->
-    <section id="character-screen" class="screen screen--character" hidden aria-labelledby="character-screen-title">
-      <div class="character-shell">
-        <div class="progress-steps" aria-label="Tahapan persiapan game">
-          <span class="progress-step progress-step--complete">1. Nama</span>
-          <span class="progress-step progress-step--active">2. Karakter</span>
-          <span class="progress-step">3. Game</span>
-        </div>
-
-        <div class="character-header">
-          <div>
-            <p class="eyebrow">PERSONALISASI KARAKTER</p>
-            <h2 id="character-screen-title">Pilih karakter untuk perjalananmu</h2>
-            <p>
-              Gunakan salah satu karakter bawaan atau tampilkan dirimu sendiri melalui foto.
-            </p>
-          </div>
-          <div class="player-badge" aria-label="Nama pemain aktif">
-            <span class="player-badge__label">Pemain</span>
-            <strong id="player-name-preview">—</strong>
-          </div>
-        </div>
-
-        <div class="character-methods">
-          <!-- Karakter bawaan -->
-          <section class="character-method character-method--built-in" aria-labelledby="built-in-title">
-            <div class="section-heading">
-              <div>
-                <p class="section-kicker">METODE 1</p>
-                <h3 id="built-in-title">Karakter Bawaan</h3>
-              </div>
-              <span class="section-caption">Pilih satu karakter</span>
-            </div>
-
-            <div id="built-in-character-list" class="character-grid" role="radiogroup" aria-label="Pilihan karakter bawaan">
-              <button
-                id="character-option-1"
-                class="character-option"
-                type="button"
-                role="radio"
-                aria-checked="false"
-                data-character-id="character-1"
-                data-character-src="karakter 1.png"
-              >
-                <span class="character-option__media">
-                  <img src="karakter 1.png" alt="Pratinjau karakter bawaan 1" class="character-option__image">
-                </span>
-                <span class="character-option__footer">
-                  <strong>Karakter 1</strong>
-                  <span>Pilihan bawaan</span>
-                </span>
-                <span class="character-option__check" aria-hidden="true">✓</span>
-              </button>
-
-              <button
-                id="character-option-2"
-                class="character-option"
-                type="button"
-                role="radio"
-                aria-checked="false"
-                data-character-id="character-2"
-                data-character-src="karakter 2.png"
-              >
-                <span class="character-option__media">
-                  <img src="karakter 2.png" alt="Pratinjau karakter bawaan 2" class="character-option__image">
-                </span>
-                <span class="character-option__footer">
-                  <strong>Karakter 2</strong>
-                  <span>Pilihan bawaan</span>
-                </span>
-                <span class="character-option__check" aria-hidden="true">✓</span>
-              </button>
-
-              <button
-                id="character-option-3"
-                class="character-option"
-                type="button"
-                role="radio"
-                aria-checked="false"
-                data-character-id="character-3"
-                data-character-src="karakter 3.png"
-              >
-                <span class="character-option__media">
-                  <img src="karakter 3.png" alt="Pratinjau karakter bawaan 3" class="character-option__image">
-                </span>
-                <span class="character-option__footer">
-                  <strong>Karakter 3</strong>
-                  <span>Pilihan bawaan</span>
-                </span>
-                <span class="character-option__check" aria-hidden="true">✓</span>
-              </button>
-            </div>
-          </section>
-
-          <!-- Foto sendiri -->
-          <section class="character-method character-method--upload" aria-labelledby="upload-title">
-            <div class="section-heading">
-              <div>
-                <p class="section-kicker">METODE 2</p>
-                <h3 id="upload-title">Foto Sendiri</h3>
-              </div>
-              <span class="section-caption">Crop 1:1</span>
-            </div>
-
-            <div class="upload-panel">
-              <div class="upload-panel__intro">
-                <div class="upload-icon" aria-hidden="true">＋</div>
-                <div>
-                  <h4>Upload Foto Sendiri</h4>
-                  <p>
-                    Pilih foto dari perangkat, lalu atur posisi dan ukuran gambar di area crop persegi.
-                    PNG transparan tetap dipertahankan transparansinya.
-                  </p>
-                </div>
-              </div>
-
-              <div class="upload-actions">
+              <label class="character-option">
                 <input
-                  id="photo-file-input"
-                  class="visually-hidden"
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
-                  aria-label="Pilih foto dari perangkat"
+                  type="radio"
+                  name="character"
+                  value="karakter1.png"
+                  data-character="character-1"
+                  checked
                 >
-                <label for="photo-file-input" id="upload-photo-button" class="button button--secondary">
-                  Upload Foto Sendiri
-                </label>
-                <button id="remove-photo-button" class="button button--ghost" type="button" hidden>
-                  Hapus Foto
+                <span class="character-card">
+                  <img
+                    src="assets/karakter1.png"
+                    alt="Karakter 1"
+                    class="character-preview"
+                  >
+                  <span class="character-name">Karakter 1</span>
+                </span>
+              </label>
+
+              <label class="character-option">
+                <input
+                  type="radio"
+                  name="character"
+                  value="karakter2.png"
+                  data-character="character-2"
+                >
+                <span class="character-card">
+                  <img
+                    src="assets/karakter2.png"
+                    alt="Karakter 2"
+                    class="character-preview"
+                  >
+                  <span class="character-name">Karakter 2</span>
+                </span>
+              </label>
+
+              <label class="character-option">
+                <input
+                  type="radio"
+                  name="character"
+                  value="karakter3.png"
+                  data-character="character-3"
+                >
+                <span class="character-card">
+                  <img
+                    src="assets/karakter3.png"
+                    alt="Karakter 3"
+                    class="character-preview"
+                  >
+                  <span class="character-name">Karakter 3</span>
+                </span>
+              </label>
+
+              <label class="character-option custom-character-option">
+                <input
+                  type="radio"
+                  name="character"
+                  value="custom"
+                  data-character="custom-character"
+                  id="custom-character-radio"
+                >
+
+                <span class="character-card">
+                  <span
+                    id="custom-avatar-preview"
+                    class="custom-avatar-preview"
+                    aria-label="Preview avatar custom"
+                  >
+                    <span class="upload-placeholder">
+                      Upload Avatar
+                    </span>
+                  </span>
+
+                  <span class="character-name">Avatar Saya</span>
+                </span>
+              </label>
+
+            </div>
+          </fieldset>
+
+          <!-- Custom avatar upload -->
+          <div class="avatar-upload-section">
+
+            <label for="avatar-upload" class="upload-button">
+              Upload Avatar Sendiri
+            </label>
+
+            <input
+              type="file"
+              id="avatar-upload"
+              name="avatar-upload"
+              accept="image/png,image/jpeg,image/gif,image/webp"
+              hidden
+            >
+
+            <p class="upload-help">
+              PNG, JPG/JPEG, GIF, atau WEBP. Gunakan rasio 1:1.
+            </p>
+
+            <!-- Crop workspace -->
+            <div
+              id="avatar-crop-container"
+              class="avatar-crop-container"
+              hidden
+            >
+              <div class="crop-header">
+                <h2>Sesuaikan Avatar</h2>
+                <p>Atur bagian gambar yang ingin digunakan.</p>
+              </div>
+
+              <div
+                id="avatar-crop-area"
+                class="avatar-crop-area"
+              >
+                <img
+                  id="avatar-crop-image"
+                  class="avatar-crop-image"
+                  src=""
+                  alt="Gambar avatar yang akan dipotong"
+                >
+              </div>
+
+              <div class="crop-controls">
+                <button
+                  type="button"
+                  id="crop-zoom-out"
+                  class="crop-control-button"
+                  aria-label="Perkecil gambar"
+                >
+                  −
+                </button>
+
+                <input
+                  type="range"
+                  id="crop-zoom"
+                  class="crop-zoom"
+                  min="1"
+                  max="3"
+                  step="0.01"
+                  value="1"
+                  aria-label="Zoom avatar"
+                >
+
+                <button
+                  type="button"
+                  id="crop-zoom-in"
+                  class="crop-control-button"
+                  aria-label="Perbesar gambar"
+                >
+                  +
                 </button>
               </div>
 
-              <p id="photo-upload-status" class="field-help" aria-live="polite">
-                Belum ada foto yang dipilih.
-              </p>
-            </div>
+              <div class="crop-actions">
+                <button
+                  type="button"
+                  id="crop-avatar-button"
+                  class="secondary-button"
+                >
+                  Crop Avatar
+                </button>
 
-            <!-- Editor crop: dikontrol game.js -->
-            <div id="crop-editor" class="crop-editor" hidden aria-label="Editor crop foto">
-              <div class="crop-editor__header">
-                <div>
-                  <h4>Atur Foto Karakter</h4>
-                  <p>Geser gambar untuk mengubah posisi dan gunakan zoom untuk menyesuaikan ukuran.</p>
-                </div>
-                <span class="crop-ratio-badge">1 : 1</span>
-              </div>
-
-              <div class="crop-editor__workspace">
-                <div id="crop-stage" class="crop-stage" aria-label="Area crop foto persegi">
-                  <img
-                    id="crop-image"
-                    class="crop-image"
-                    src=""
-                    alt="Pratinjau foto untuk crop"
-                    draggable="false"
-                  >
-                  <div id="crop-frame" class="crop-frame" aria-hidden="true"></div>
-                  <div class="crop-overlay crop-overlay--top" aria-hidden="true"></div>
-                  <div class="crop-overlay crop-overlay--right" aria-hidden="true"></div>
-                  <div class="crop-overlay crop-overlay--bottom" aria-hidden="true"></div>
-                  <div class="crop-overlay crop-overlay--left" aria-hidden="true"></div>
-                </div>
-
-                <div class="crop-preview-panel">
-                  <p class="crop-preview-panel__label">Preview Karakter</p>
-                  <div id="crop-preview-box" class="crop-preview-box" aria-label="Preview hasil crop">
-                    <canvas id="crop-preview-canvas" width="320" height="320" aria-label="Hasil crop foto"></canvas>
-                  </div>
-                  <p class="crop-preview-panel__note">Hasil tetap berbentuk persegi dan siap digunakan sebagai sprite.</p>
-                </div>
-              </div>
-
-              <div class="crop-controls" aria-label="Kontrol editor crop">
-                <div class="crop-control crop-control--zoom">
-                  <label class="field-label" for="crop-zoom">Perbesar / Perkecil</label>
-                  <input
-                    id="crop-zoom"
-                    type="range"
-                    min="0.5"
-                    max="3"
-                    step="0.01"
-                    value="1"
-                    aria-label="Tingkat zoom foto"
-                  >
-                  <output id="crop-zoom-value" for="crop-zoom">100%</output>
-                </div>
-
-                <div class="crop-control crop-control--move">
-                  <span class="field-label">Posisi</span>
-                  <div class="crop-move-buttons" role="group" aria-label="Kontrol posisi foto">
-                    <button id="crop-move-up" class="icon-button" type="button" aria-label="Geser foto ke atas">↑</button>
-                    <button id="crop-move-left" class="icon-button" type="button" aria-label="Geser foto ke kiri">←</button>
-                    <button id="crop-move-down" class="icon-button" type="button" aria-label="Geser foto ke bawah">↓</button>
-                    <button id="crop-move-right" class="icon-button" type="button" aria-label="Geser foto ke kanan">→</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="crop-editor__actions">
-                <button id="crop-reset-button" class="button button--ghost" type="button">Reset</button>
-                <button id="crop-use-button" class="button button--secondary" type="button">Gunakan Foto</button>
+                <button
+                  type="button"
+                  id="cancel-crop-button"
+                  class="secondary-button"
+                >
+                  Batal
+                </button>
               </div>
             </div>
-          </section>
-        </div>
 
-        <div class="character-confirmation-bar">
-          <div class="selected-character-status" aria-live="polite">
-            <span class="status-dot" aria-hidden="true"></span>
-            <div>
-              <span class="status-label">Karakter dipilih</span>
-              <strong id="selected-character-name">Belum memilih</strong>
-            </div>
           </div>
 
-          <div class="form-actions form-actions--character">
-            <button id="character-back-button" class="button button--ghost" type="button">
-              Kembali
-            </button>
-            <button
-              id="character-confirm-button"
-              class="button button--primary"
-              type="button"
-              disabled
-            >
-              Konfirmasi Karakter &amp; Mulai Game
-            </button>
-          </div>
-        </div>
+          <button
+            type="submit"
+            id="start-game-button"
+            class="primary-button start-game-button"
+          >
+            Mulai Permainan
+          </button>
+
+        </form>
+
       </div>
     </section>
 
-    <!-- =========================
+
+    <!-- =========================================
          GAME SCREEN
-         ========================= -->
-    <section id="game-screen" class="screen screen--game" hidden aria-label="Area permainan">
-      <div id="game-shell" class="game-shell">
-        <header id="game-hud" class="game-hud">
-          <div class="hud-brand" aria-label="Nama game">
-            <span class="hud-brand__mark" aria-hidden="true">JP</span>
-            <span class="hud-brand__text">Jelajah Pancasila</span>
-          </div>
+         ========================================= -->
+    <section
+      id="game-screen"
+      class="screen game-screen"
+      hidden
+      aria-label="Area permainan"
+    >
 
-          <div class="hud-player" aria-label="Identitas pemain">
-            <span class="hud-player__label">Pemain</span>
-            <strong id="hud-player-name">—</strong>
-          </div>
+      <!-- =======================================
+           HUD
+           ======================================= -->
+      <header id="game-hud" class="game-hud">
 
-          <div class="hud-progress" aria-label="Progress materi">
-            <div class="hud-progress__text">
-              <span>Progress Materi</span>
-              <strong id="hud-progress-value">0 / 6</strong>
-            </div>
-            <div
-              id="hud-progress-track"
-              class="progress-bar"
-              role="progressbar"
-              aria-valuemin="0"
-              aria-valuemax="6"
-              aria-valuenow="0"
-              aria-label="Progress membaca materi"
-            >
-              <span id="hud-progress-fill" class="progress-bar__fill"></span>
-            </div>
-          </div>
-
-          <div class="hud-actions" aria-label="Kontrol permainan">
-            <button id="help-button" class="hud-button" type="button" aria-label="Buka petunjuk permainan">
-              <span aria-hidden="true">?</span>
-              <span class="hud-button__text">Petunjuk</span>
-            </button>
-            <button id="quit-game-button" class="hud-button hud-button--danger" type="button" aria-label="Keluar dari permainan">
-              <span aria-hidden="true">×</span>
-              <span class="hud-button__text">Keluar</span>
-            </button>
-          </div>
-        </header>
-
-        <div id="game-viewport" class="game-viewport">
-          <div id="game-container" class="game-container" role="application" aria-label="Game 2D Jelajah Pancasila">
-            <!--
-              Game world dirender dan dikendalikan sepenuhnya oleh game.js.
-              Container ini sengaja kosong agar engine dapat membuat canvas / sprite / elemen map dinamis.
-            -->
-          </div>
-
-          <div id="interaction-prompt" class="interaction-prompt" hidden aria-live="polite">
-            <span class="interaction-prompt__key">E</span>
-            <span id="interaction-prompt-text">Tekan E untuk membaca materi</span>
-          </div>
-
-          <div id="mobile-controls" class="mobile-controls" aria-label="Kontrol sentuh untuk perangkat mobile">
-            <div class="mobile-controls__cluster mobile-controls__cluster--movement">
-              <button id="move-up-button" class="mobile-control" type="button" aria-label="Bergerak ke atas">↑</button>
-              <button id="move-left-button" class="mobile-control" type="button" aria-label="Bergerak ke kiri">←</button>
-              <button id="move-down-button" class="mobile-control" type="button" aria-label="Bergerak ke bawah">↓</button>
-              <button id="move-right-button" class="mobile-control" type="button" aria-label="Bergerak ke kanan">→</button>
-            </div>
-            <button id="interact-button" class="mobile-control mobile-control--interact" type="button" aria-label="Berinteraksi dengan titik materi">
-              E
-            </button>
-          </div>
-
-          <div id="game-loading-overlay" class="game-loading-overlay" hidden aria-live="polite">
-            <div class="loading-card">
-              <div class="loading-spinner" aria-hidden="true"></div>
-              <p id="game-loading-text">Menyiapkan dunia permainan…</p>
-            </div>
-          </div>
+        <div class="hud-player">
+          <span class="hud-label">Pemain</span>
+          <strong id="hud-player-name">Pemain</strong>
         </div>
+
+        <div class="hud-progress">
+
+          <div class="progress-header">
+            <span>Progress Pembelajaran</span>
+            <strong id="progress-text">0 / 6</strong>
+          </div>
+
+          <div
+            id="learning-progress"
+            class="progress-bar"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="6"
+            aria-valuenow="0"
+            aria-label="Progress pembelajaran"
+          >
+            <div
+              id="learning-progress-fill"
+              class="progress-fill"
+            ></div>
+          </div>
+
+        </div>
+
+        <div class="hud-actions">
+
+          <button
+            type="button"
+            id="material-menu-button"
+            class="hud-button"
+          >
+            Materi
+          </button>
+
+          <button
+            type="button"
+            id="camera-reset-button"
+            class="hud-button"
+          >
+            Reset Kamera
+          </button>
+
+          <button
+            type="button"
+            id="main-menu-button"
+            class="hud-button"
+          >
+            Menu
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <!-- =======================================
+           GAME VIEWPORT
+           ======================================= -->
+      <div
+        id="game-viewport"
+        class="game-viewport"
+        tabindex="0"
+        aria-label="Viewport permainan"
+      >
+
+        <!-- World / Map -->
+        <div
+          id="game-world"
+          class="game-world"
+          data-world-width="2400"
+          data-world-height="1600"
+        >
+
+          <!-- Decorative map layer -->
+          <div
+            id="map-background"
+            class="map-background"
+            aria-hidden="true"
+          ></div>
+
+          <!-- =====================================
+               MATERIAL POINT 1
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-1"
+            class="material-point"
+            data-material-id="1"
+            data-x="300"
+            data-y="300"
+            aria-label="Materi 1: Pancasila Dalam Kajian Sejarah"
+          >
+            <span class="point-icon">1</span>
+            <span class="point-label">
+              Pancasila Dalam Kajian Sejarah
+            </span>
+            <span
+              class="point-status"
+              data-status-for="1"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               MATERIAL POINT 2
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-2"
+            class="material-point"
+            data-material-id="2"
+            data-x="850"
+            data-y="250"
+            aria-label="Materi 2: Pancasila sebagai Sistem Filsafat"
+          >
+            <span class="point-icon">2</span>
+            <span class="point-label">
+              Pancasila sebagai Sistem Filsafat
+            </span>
+            <span
+              class="point-status"
+              data-status-for="2"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               MATERIAL POINT 3
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-3"
+            class="material-point"
+            data-material-id="3"
+            data-x="1500"
+            data-y="300"
+            aria-label="Materi 3: Pancasila sebagai Ideologi"
+          >
+            <span class="point-icon">3</span>
+            <span class="point-label">
+              Pancasila sebagai Ideologi
+            </span>
+            <span
+              class="point-status"
+              data-status-for="3"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               MATERIAL POINT 4
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-4"
+            class="material-point"
+            data-material-id="4"
+            data-x="450"
+            data-y="950"
+            aria-label="Materi 4: Pancasila sebagai Dasar Negara"
+          >
+            <span class="point-icon">4</span>
+            <span class="point-label">
+              Pancasila sebagai Dasar Negara
+            </span>
+            <span
+              class="point-status"
+              data-status-for="4"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               MATERIAL POINT 5
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-5"
+            class="material-point"
+            data-material-id="5"
+            data-x="1100"
+            data-y="1050"
+            aria-label="Materi 5: Pancasila sebagai Sistem Etika"
+          >
+            <span class="point-icon">5</span>
+            <span class="point-label">
+              Pancasila sebagai Sistem Etika
+            </span>
+            <span
+              class="point-status"
+              data-status-for="5"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               MATERIAL POINT 6
+               ===================================== -->
+          <button
+            type="button"
+            id="material-point-6"
+            class="material-point"
+            data-material-id="6"
+            data-x="1750"
+            data-y="1000"
+            aria-label="Materi 6: Pancasila dan IPTEK"
+          >
+            <span class="point-icon">6</span>
+            <span class="point-label">
+              Pancasila dan IPTEK
+            </span>
+            <span
+              class="point-status"
+              data-status-for="6"
+            >
+              Belum Dipelajari
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               QUIZIZZ PORTAL
+               ===================================== -->
+          <button
+            type="button"
+            id="quizizz-portal"
+            class="quizizz-portal portal-locked"
+            data-quizizz-url="QUIZIZZ_URL"
+            aria-label="Portal Quizizz"
+            aria-disabled="true"
+          >
+            <span class="portal-icon">✦</span>
+
+            <span class="portal-title">
+              Portal Quizizz
+            </span>
+
+            <span
+              id="portal-status"
+              class="portal-status"
+            >
+              Terkunci — Selesaikan 6 materi
+            </span>
+          </button>
+
+
+          <!-- =====================================
+               PLAYER
+               ===================================== -->
+          <div
+            id="player"
+            class="player"
+            data-x="1200"
+            data-y="700"
+            role="img"
+            aria-label="Karakter pemain"
+          >
+
+            <div
+              id="player-name-label"
+              class="player-name-label"
+            >
+              Pemain
+            </div>
+
+            <div
+              id="player-avatar-wrapper"
+              class="player-avatar-wrapper"
+            >
+              <img
+                id="player-avatar"
+                class="player-avatar"
+                src="assets/karakter1.png"
+                alt="Avatar pemain"
+                draggable="false"
+              >
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
+
+      <!-- =======================================
+           CAMERA CONTROLS
+           ======================================= -->
+      <nav
+        id="camera-controls"
+        class="camera-controls"
+        aria-label="Kontrol kamera"
+      >
+        <button
+          type="button"
+          id="camera-up"
+          class="camera-button"
+          aria-label="Geser kamera ke atas"
+        >
+          ↑
+        </button>
+
+        <div class="camera-horizontal-controls">
+          <button
+            type="button"
+            id="camera-left"
+            class="camera-button"
+            aria-label="Geser kamera ke kiri"
+          >
+            ←
+          </button>
+
+          <button
+            type="button"
+            id="camera-center"
+            class="camera-button"
+            aria-label="Pusatkan kamera pada pemain"
+          >
+            ●
+          </button>
+
+          <button
+            type="button"
+            id="camera-right"
+            class="camera-button"
+            aria-label="Geser kamera ke kanan"
+          >
+            →
+          </button>
+        </div>
+
+        <button
+          type="button"
+          id="camera-down"
+          class="camera-button"
+          aria-label="Geser kamera ke bawah"
+        >
+          ↓
+        </button>
+      </nav>
+
+
+      <!-- =======================================
+           MATERIAL MENU
+           ======================================= -->
+      <aside
+        id="material-menu"
+        class="side-panel material-menu"
+        hidden
+        aria-label="Daftar materi"
+      >
+
+        <div class="panel-header">
+          <h2>Daftar Materi</h2>
+
+          <button
+            type="button"
+            id="close-material-menu"
+            class="close-button"
+            aria-label="Tutup daftar materi"
+          >
+            ×
+          </button>
+        </div>
+
+        <ol
+          id="material-list"
+          class="material-list"
+        >
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="1"
+            >
+              <span>Materi 1</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="2"
+            >
+              <span>Materi 2</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="3"
+            >
+              <span>Materi 3</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="4"
+            >
+              <span>Materi 4</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="5"
+            >
+              <span>Materi 5</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="material-list-item"
+              data-material-id="6"
+            >
+              <span>Materi 6</span>
+              <span class="list-status">Belum</span>
+            </button>
+          </li>
+        </ol>
+
+      </aside>
+
+
+      <!-- =======================================
+           MATERIAL MODAL
+           ======================================= -->
+      <div
+        id="material-modal"
+        class="modal-overlay"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="material-modal-title"
+      >
+
+        <article class="modal material-modal-content">
+
+          <header class="modal-header">
+
+            <div>
+              <span
+                id="material-modal-number"
+                class="modal-kicker"
+              >
+                Materi 1
+              </span>
+
+              <h2 id="material-modal-title">
+                Pancasila Dalam Kajian Sejarah
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              id="close-material-modal"
+              class="close-button"
+              aria-label="Tutup materi"
+            >
+              ×
+            </button>
+
+          </header>
+
+
+          <div
+            id="material-content"
+            class="material-content"
+          >
+
+            <!--
+              Materi 1
+            -->
+            <article
+              class="material-article"
+              data-material-content="1"
+              hidden
+            >
+
+              <h3>Pancasila Dalam Kajian Sejarah</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila terbentuk melalui proses sejarah panjang dan kemudian disahkan sebagai dasar negara Indonesia.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>29 Mei–1 Juni 1945: Sidang BPUPK I membahas dasar negara.</li>
+                  <li>1 Juni 1945: Soekarno memperkenalkan istilah Pancasila.</li>
+                  <li>10–17 Juli 1945: Pembahasan dan perumusan Piagam Jakarta.</li>
+                  <li>18 Agustus 1945: Pancasila disahkan sebagai dasar negara dalam UUD 1945.</li>
+                  <li>Tokoh utama: Muhammad Yamin, Soepomo, dan Soekarno.</li>
+                  <li>Perjalanan Pancasila: Purbakala → Hindu-Buddha → Islam → Kolonialisme → BPUPK → Orde Lama → Orde Baru → Reformasi.</li>
+                  <li>Tantangan saat ini: korupsi, intoleransi, radikalisme, hoaks, dan politik identitas.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+
+            <!--
+              Materi 2
+            -->
+            <article
+              class="material-article"
+              data-material-content="2"
+              hidden
+            >
+
+              <h3>Pancasila sebagai Sistem Filsafat</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila merupakan sistem filsafat karena kelima silanya saling berhubungan dan menjadi dasar pemikiran kehidupan bangsa.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>Filsafat = berpikir radikal, sistematis, menyeluruh, dan logis.</li>
+                  <li>Pancasila merupakan sistem yang utuh, bukan kumpulan nilai yang terpisah.</li>
+                  <li>Lima sila memiliki hubungan hierarkis-piramidal dan saling mengisi.</li>
+                  <li>
+                    Filsafat Pancasila mencakup:
+                    <ul>
+                      <li>Ontologi → hakikat</li>
+                      <li>Epistemologi → cara memperoleh pengetahuan</li>
+                      <li>Aksiologi → nilai/kegunaan</li>
+                    </ul>
+                  </li>
+                  <li>Pancasila menjadi pandangan hidup dan pedoman dalam kehidupan sehari-hari.</li>
+                  <li>Nilai Pancasila berasal dari budaya, agama, dan pengalaman sejarah bangsa Indonesia.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+
+            <!--
+              Materi 3
+            -->
+            <article
+              class="material-article"
+              data-material-content="3"
+              hidden
+            >
+
+              <h3>Pancasila sebagai Ideologi</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila merupakan ideologi terbuka yang menjadi jalan tengah antara berbagai ideologi dan menyesuaikan penerapannya dengan perkembangan zaman.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>Ideologi = seperangkat nilai, gagasan, dan cita-cita yang menjadi pedoman.</li>
+                  <li>Pancasila adalah ideologi terbuka.</li>
+                  <li>Nilai dasar tetap, tetapi penerapannya dapat menyesuaikan perkembangan zaman.</li>
+                  <li>Menggabungkan nilai universal seperti HAM, keadilan, dan demokrasi dengan gotong royong dan toleransi.</li>
+                  <li>Menjaga keseimbangan antara kebebasan individu dan kepentingan bersama.</li>
+                  <li>Tantangan: radikalisme, disinformasi, kapitalisme global, dan politik identitas.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+
+            <!--
+              Materi 4
+            -->
+            <article
+              class="material-article"
+              data-material-content="4"
+              hidden
+            >
+
+              <h3>Pancasila sebagai Dasar Negara</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila merupakan dasar negara, sumber dari segala sumber hukum, dan landasan penyelenggaraan negara.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>Pancasila menjadi sumber dari segala sumber hukum.</li>
+                  <li>Menjadi cita hukum dan landasan pembangunan nasional.</li>
+                  <li>Pancasila tercantum dalam Pembukaan UUD 1945 Alinea IV.</li>
+                  <li>
+                    Hubungan dengan UUD 1945:
+                    <ul>
+                      <li>Formal: tercantum dalam Pembukaan UUD 1945.</li>
+                      <li>Material: menjadi isi pokok/fundamental Pembukaan UUD 1945.</li>
+                    </ul>
+                  </li>
+                  <li>Pancasila diterapkan dalam bidang politik, ekonomi, sosial budaya, serta pertahanan dan keamanan.</li>
+                  <li>Kedudukan Pancasila tetap menjadi dasar negara meskipun UUD 1945 mengalami amandemen.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+
+            <!--
+              Materi 5
+            -->
+            <article
+              class="material-article"
+              data-material-content="5"
+              hidden
+            >
+
+              <h3>Pancasila sebagai Sistem Etika</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila sebagai sistem etika menjadi pedoman untuk menentukan baik-buruk dan benar-salah dalam kehidupan bermasyarakat dan bernegara.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>Etika: pemikiran tentang baik-buruk dan benar-salah.</li>
+                  <li>Moral: nilai dan norma yang menjadi pedoman perilaku.</li>
+                  <li>Etiket: aturan sopan santun.</li>
+                  <li>Hubungan: Etika → Moral → Etiket.</li>
+                  <li>
+                    Aliran etika:
+                    <ul>
+                      <li>Hedonisme</li>
+                      <li>Utilitarianisme</li>
+                      <li>Deontologi</li>
+                      <li>Etika kebajikan</li>
+                    </ul>
+                  </li>
+                  <li>Etika Pancasila menggabungkan nilai religius, kemanusiaan, kebangsaan, demokrasi, dan keadilan.</li>
+                  <li>Pancasila menjadi pedoman menghadapi intoleransi, diskriminasi, konflik, korupsi, dan ketidakadilan.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+
+            <!--
+              Materi 6
+            -->
+            <article
+              class="material-article"
+              data-material-content="6"
+              hidden
+            >
+
+              <h3>Pancasila dan IPTEK</h3>
+
+              <section class="material-summary">
+                <h4>Rangkuman:</h4>
+                <p>
+                  Pancasila menjadi pedoman nilai dan moral agar perkembangan IPTEK tetap berorientasi pada manusia dan kepentingan masyarakat.
+                </p>
+              </section>
+
+              <section class="material-points">
+                <h4>Poin-Poin Penting:</h4>
+
+                <ul>
+                  <li>IPTEK memberikan manfaat sekaligus risiko.</li>
+                  <li>IPTEK membutuhkan nilai karena penggunaannya dipengaruhi kepentingan manusia.</li>
+                  <li>
+                    Pancasila sebagai filter IPTEK:
+                    <ul>
+                      <li>Sila 1: sesuai moral.</li>
+                      <li>Sila 2: menjaga martabat manusia.</li>
+                      <li>Sila 3: memperkuat persatuan.</li>
+                      <li>Sila 4: bersifat inklusif.</li>
+                      <li>Sila 5: manfaatnya harus adil.</li>
+                    </ul>
+                  </li>
+                  <li>Contoh isu: AI, Big Data, privasi, diskriminasi algoritma, media sosial, dan disinformasi.</li>
+                  <li>Intinya: IPTEK harus memanusiakan manusia, bukan merugikan manusia.</li>
+                </ul>
+
+              </section>
+
+            </article>
+
+          </div>
+
+
+          <footer class="modal-footer">
+
+            <div
+              id="material-completion-status"
+              class="material-completion-status"
+            >
+              Belum selesai dipelajari
+            </div>
+
+            <div class="modal-actions">
+
+              <button
+                type="button"
+                id="material-start-button"
+                class="primary-button"
+              >
+                Mulai Membaca
+              </button>
+
+              <button
+                type="button"
+                id="material-next-button"
+                class="primary-button"
+                hidden
+              >
+                Tandai Selesai & Lanjut
+              </button>
+
+              <button
+                type="button"
+                id="material-close-button"
+                class="secondary-button"
+              >
+                Tutup
+              </button>
+
+            </div>
+
+          </footer>
+
+        </article>
+
+      </div>
+
+
+      <!-- =======================================
+           QUIZIZZ MODAL
+           ======================================= -->
+      <div
+        id="quizizz-modal"
+        class="modal-overlay"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quizizz-modal-title"
+      >
+
+        <article class="modal quizizz-modal-content">
+
+          <header class="modal-header">
+
+            <div>
+              <span class="modal-kicker">
+                Pembelajaran Selesai
+              </span>
+
+              <h2 id="quizizz-modal-title">
+                Portal Quizizz
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              id="close-quizizz-modal"
+              class="close-button"
+              aria-label="Tutup portal Quizizz"
+            >
+              ×
+            </button>
+
+          </header>
+
+          <div class="quizizz-content">
+
+            <div
+              id="quizizz-success-message"
+              class="quizizz-success-message"
+            >
+              Semua materi telah selesai dipelajari. Portal Quizizz telah terbuka!
+            </div>
+
+            <p>
+              Keenam materi pembelajaran telah selesai. Kamu dapat melanjutkan
+              ke Quizizz melalui portal berikut.
+            </p>
+
+            <!--
+              Developer:
+              Ganti nilai QUIZIZZ_URL dengan URL Quizizz sebenarnya.
+            -->
+            <div
+              id="quizizz-url-placeholder"
+              class="quizizz-url-placeholder"
+              data-url-placeholder="QUIZIZZ_URL"
+            >
+              QUIZIZZ_URL
+            </div>
+
+            <button
+              type="button"
+              id="open-quizizz-button"
+              class="primary-button"
+            >
+              Buka Quizizz
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- =======================================
+           NOTIFICATION
+           ======================================= -->
+      <div
+        id="game-notification"
+        class="game-notification"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
+        <span id="notification-message"></span>
+      </div>
+
+
+      <!-- =======================================
+           GAME MENU MODAL
+           ======================================= -->
+      <div
+        id="game-menu-modal"
+        class="modal-overlay"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="game-menu-title"
+      >
+
+        <article class="modal game-menu-content">
+
+          <header class="modal-header">
+
+            <div>
+              <span class="modal-kicker">
+                Permainan
+              </span>
+
+              <h2 id="game-menu-title">
+                Menu
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              id="close-game-menu"
+              class="close-button"
+              aria-label="Tutup menu"
+            >
+              ×
+            </button>
+
+          </header>
+
+          <div class="game-menu-actions">
+
+            <button
+              type="button"
+              id="resume-game-button"
+              class="primary-button"
+            >
+              Lanjut Bermain
+            </button>
+
+            <button
+              type="button"
+              id="restart-game-button"
+              class="secondary-button"
+            >
+              Mulai Ulang
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
     </section>
+
   </main>
 
-  <!-- =========================
-       MODAL MATERI
-       ========================= -->
-  <dialog id="material-modal" class="modal modal--material" aria-labelledby="material-modal-title">
-    <div class="modal__panel">
-      <button id="material-close-button" class="modal__close" type="button" aria-label="Tutup materi">
-        ×
-      </button>
 
-      <div class="modal__eyebrow" id="material-modal-category">MATERI</div>
-      <h2 id="material-modal-title">Judul Materi</h2>
+  <!--
+    JavaScript utama game.
+    Seluruh gameplay, player movement, camera,
+    crop avatar, progress materi, dan portal Quizizz
+    dikendalikan melalui script.js.
+  -->
+  <script src="script.js" defer></script>
 
-      <div class="material-summary">
-        <h3>Rangkuman</h3>
-        <div id="material-summary-content" class="rich-content">
-          <!-- Konten rangkuman diisi oleh game.js -->
-        </div>
-      </div>
-
-      <div class="material-points">
-        <h3>Poin-Poin Penting</h3>
-        <div id="material-points-content" class="rich-content">
-          <!-- Konten poin penting diisi oleh game.js -->
-        </div>
-      </div>
-
-      <footer class="modal__footer">
-        <div class="material-progress-label">
-          <span>Materi</span>
-          <strong id="material-progress-value">0 / 6</strong>
-        </div>
-        <div class="modal__footer-actions">
-          <button id="material-next-button" class="button button--primary" type="button" hidden>
-            Materi Berikutnya
-          </button>
-          <button id="material-done-button" class="button button--secondary" type="button">
-            Tandai Sudah Dibaca
-          </button>
-        </div>
-      </footer>
-    </div>
-  </dialog>
-
-  <!-- =========================
-       MODAL PETUNJUK
-       ========================= -->
-  <dialog id="help-modal" class="modal modal--help" aria-labelledby="help-modal-title">
-    <div class="modal__panel">
-      <button id="help-close-button" class="modal__close" type="button" aria-label="Tutup petunjuk">
-        ×
-      </button>
-
-      <div class="modal__eyebrow">PETUNJUK</div>
-      <h2 id="help-modal-title">Cara Bermain</h2>
-
-      <div class="help-list">
-        <div class="help-item">
-          <span class="help-item__number">01</span>
-          <div>
-            <h3>Bergerak</h3>
-            <p>Gunakan <strong>WASD</strong> atau <strong>tombol panah</strong> untuk menjelajahi map.</p>
-          </div>
-        </div>
-
-        <div class="help-item">
-          <span class="help-item__number">02</span>
-          <div>
-            <h3>Dekati Titik Materi</h3>
-            <p>Datangi titik materi hingga indikator interaksi muncul di layar.</p>
-          </div>
-        </div>
-
-        <div class="help-item">
-          <span class="help-item__number">03</span>
-          <div>
-            <h3>Baca Materi</h3>
-            <p>Tekan <strong>E</strong> atau tombol interaksi untuk membuka rangkuman materi.</p>
-          </div>
-        </div>
-
-        <div class="help-item">
-          <span class="help-item__number">04</span>
-          <div>
-            <h3>Selesaikan 6 Materi</h3>
-            <p>Baca seluruh materi hingga progress mencapai <strong>6 / 6</strong>.</p>
-          </div>
-        </div>
-
-        <div class="help-item">
-          <span class="help-item__number">05</span>
-          <div>
-            <h3>Menuju Area Akhir</h3>
-            <p>Setelah semua materi selesai, temukan area finish untuk menyelesaikan perjalanan.</p>
-          </div>
-        </div>
-
-        <div class="help-item">
-          <span class="help-item__number">06</span>
-          <div>
-            <h3>Lanjut ke Quizizz</h3>
-            <p>Gunakan tombol Quizizz pada akhir permainan untuk melanjutkan ke sesi kuis.</p>
-          </div>
-        </div>
-      </div>
-
-      <footer class="modal__footer modal__footer--single">
-        <button id="help-understand-button" class="button button--primary" type="button">
-          Saya Mengerti
-        </button>
-      </footer>
-    </div>
-  </dialog>
-
-  <!-- =========================
-       MODAL KONFIRMASI KELUAR
-       ========================= -->
-  <dialog id="quit-confirm-modal" class="modal modal--confirm" aria-labelledby="quit-confirm-title">
-    <div class="modal__panel modal__panel--compact">
-      <button id="quit-confirm-close-button" class="modal__close" type="button" aria-label="Tutup konfirmasi">
-        ×
-      </button>
-
-      <div class="confirm-icon" aria-hidden="true">!</div>
-      <div class="modal__eyebrow">KONFIRMASI</div>
-      <h2 id="quit-confirm-title">Keluar dari permainan?</h2>
-      <p>
-        Progress permainan pada sesi ini dapat terputus. Pastikan kamu benar-benar ingin kembali ke menu.
-      </p>
-
-      <div class="modal__footer-actions modal__footer-actions--confirm">
-        <button id="quit-cancel-button" class="button button--ghost" type="button">
-          Tetap Bermain
-        </button>
-        <button id="quit-confirm-button" class="button button--danger" type="button">
-          Keluar ke Menu
-        </button>
-      </div>
-    </div>
-  </dialog>
-
-  <!-- =========================
-       MODAL FINISH / QUIZIZZ
-       ========================= -->
-  <dialog id="finish-modal" class="modal modal--finish" aria-labelledby="finish-modal-title">
-    <div class="modal__panel modal__panel--finish">
-      <div class="finish-illustration" aria-hidden="true">
-        <span class="finish-illustration__star finish-illustration__star--one">✦</span>
-        <span class="finish-illustration__star finish-illustration__star--two">✦</span>
-        <span class="finish-illustration__star finish-illustration__star--three">✦</span>
-        <div class="finish-illustration__flag">
-          <span class="finish-illustration__pole"></span>
-          <span class="finish-illustration__banner">SELESAI</span>
-        </div>
-      </div>
-
-      <div class="modal__eyebrow">PERJALANAN SELESAI</div>
-      <h2 id="finish-modal-title">Seluruh materi telah selesai!</h2>
-      <p id="finish-modal-message">
-        Kamu telah menemukan dan membaca seluruh titik materi. Saatnya melanjutkan perjalanan ke sesi kuis.
-      </p>
-
-      <div class="finish-progress-card" aria-label="Ringkasan progress akhir">
-        <div>
-          <span>Progress Materi</span>
-          <strong id="finish-progress-value">6 / 6</strong>
-        </div>
-        <div>
-          <span>Pemain</span>
-          <strong id="finish-player-name">—</strong>
-        </div>
-      </div>
-
-      <div class="finish-actions">
-        <a
-          id="quizizz-button"
-          class="button button--primary button--large"
-          href="#"
-          data-quizizz-url="[link quizziz di sini]"
-          aria-label="Lanjut ke Quizizz"
-        >
-          Lanjut ke Quizizz
-        </a>
-        <button id="finish-return-button" class="button button--ghost" type="button">
-          Kembali ke Game
-        </button>
-      </div>
-    </div>
-  </dialog>
-
-  <noscript>
-    <div class="noscript-message">
-      Game ini membutuhkan JavaScript untuk menjalankan interaksi, crop foto, dan dunia permainan 2D.
-    </div>
-  </noscript>
-
-  <script src="game.js" defer></script>
 </body>
 </html>
