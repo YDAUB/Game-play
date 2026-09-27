@@ -1,40 +1,43 @@
-"use strict";
+/* =========================================================
+   PANCASILA EDUCATIONAL GAME
+   Vanilla JavaScript
+========================================================= */
 
 /* =========================================================
-   PANCASILA EXPLORER
-   Main Game Engine - Vanilla JavaScript
-   ========================================================= */
+   1. CONSTANTS
+========================================================= */
 
-/* =========================================================
-   CONFIGURATION
-   ========================================================= */
-
-const QUIZIZZ_URL = "ISI_LINK_QUIZIZZ_DI_SINI";
-
-const ASSET_PATH = "assets/";
-
-const CHARACTER_ASSETS = {
-    karakter1: `${ASSET_PATH}karakter1.png`,
-    karakter2: `${ASSET_PATH}karakter2.png`,
-    karakter3: `${ASSET_PATH}karakter3.png`
-};
-
-const STORAGE_KEY = "pancasilaExplorerSave";
+const QUIZ_URL = "https://www.youtube.com/watch?v=ChxVn2F9te0";
 
 const WORLD_WIDTH = 2400;
-const WORLD_HEIGHT = 1600;
+const WORLD_HEIGHT = 1800;
 
-const PLAYER_DEFAULT_SPEED = 260;
-const CAMERA_SMOOTHING = 0.085;
+const PLAYER_SPEED = 260;
+const INTERACTION_DISTANCE = 150;
 
-const INTERACTION_DISTANCE = 120;
-const MATERIAL_INTERACTION_DISTANCE = 145;
-const PORTAL_INTERACTION_DISTANCE = 170;
+const MAX_AVATAR_SIZE = 10 * 1024 * 1024;
 
-const MAX_AVATAR_FILE_SIZE = 10 * 1024 * 1024;
+const DEFAULT_PLAYER_NAME = "Pemain";
 
-const MATERIAL_DATA = [
-    {
+const STORAGE_KEYS = {
+    playerName: "pancasilaGame_playerName",
+    character: "pancasilaGame_character",
+    completedMaterials: "pancasilaGame_completedMaterials"
+};
+
+const CHARACTER_ASSETS = {
+    karakter1: "assets/karakter1.png",
+    karakter2: "assets/karakter2.png",
+    karakter3: "assets/karakter3.png"
+};
+
+
+/* =========================================================
+   2. MATERIAL DATA
+========================================================= */
+
+const MATERIALS = {
+    1: {
         id: 1,
         title: "Pancasila Dalam Kajian Sejarah",
         summary:
@@ -49,7 +52,8 @@ const MATERIAL_DATA = [
             "Tantangan saat ini: korupsi, intoleransi, radikalisme, hoaks, dan politik identitas."
         ]
     },
-    {
+
+    2: {
         id: 2,
         title: "Pancasila sebagai Sistem Filsafat",
         summary:
@@ -58,15 +62,13 @@ const MATERIAL_DATA = [
             "Filsafat = berpikir radikal, sistematis, menyeluruh, dan logis.",
             "Pancasila merupakan sistem yang utuh, bukan kumpulan nilai yang terpisah.",
             "Lima sila memiliki hubungan hierarkis-piramidal dan saling mengisi.",
-            "Filsafat Pancasila mencakup:",
-            "Ontologi → hakikat",
-            "Epistemologi → cara memperoleh pengetahuan",
-            "Aksiologi → nilai/kegunaan",
+            "Filsafat Pancasila mencakup: Ontologi → hakikat; Epistemologi → cara memperoleh pengetahuan; Aksiologi → nilai/kegunaan.",
             "Pancasila menjadi pandangan hidup dan pedoman dalam kehidupan sehari-hari.",
             "Nilai Pancasila berasal dari budaya, agama, dan pengalaman sejarah bangsa Indonesia."
         ]
     },
-    {
+
+    3: {
         id: 3,
         title: "Pancasila sebagai Ideologi",
         summary:
@@ -80,7 +82,8 @@ const MATERIAL_DATA = [
             "Tantangan: radikalisme, disinformasi, kapitalisme global, dan politik identitas."
         ]
     },
-    {
+
+    4: {
         id: 4,
         title: "Pancasila sebagai Dasar Negara",
         summary:
@@ -89,14 +92,13 @@ const MATERIAL_DATA = [
             "Pancasila menjadi sumber dari segala sumber hukum.",
             "Menjadi cita hukum dan landasan pembangunan nasional.",
             "Pancasila tercantum dalam Pembukaan UUD 1945 Alinea IV.",
-            "Hubungan dengan UUD 1945:",
-            "Formal: tercantum dalam Pembukaan UUD 1945.",
-            "Material: menjadi isi pokok/fundamental Pembukaan UUD 1945.",
+            "Hubungan dengan UUD 1945: Formal: tercantum dalam Pembukaan UUD 1945. Material: menjadi isi pokok/fundamental Pembukaan UUD 1945.",
             "Pancasila diterapkan dalam bidang politik, ekonomi, sosial budaya, serta pertahanan dan keamanan.",
             "Kedudukan Pancasila tetap menjadi dasar negara meskipun UUD 1945 mengalami amandemen."
         ]
     },
-    {
+
+    5: {
         id: 5,
         title: "Pancasila sebagai Sistem Etika",
         summary:
@@ -106,16 +108,13 @@ const MATERIAL_DATA = [
             "Moral: nilai dan norma yang menjadi pedoman perilaku.",
             "Etiket: aturan sopan santun.",
             "Hubungan: Etika → Moral → Etiket.",
-            "Aliran etika:",
-            "Hedonisme",
-            "Utilitarianisme",
-            "Deontologi",
-            "Etika kebajikan",
+            "Aliran etika: Hedonisme, Utilitarianisme, Deontologi, Etika kebajikan.",
             "Etika Pancasila menggabungkan nilai religius, kemanusiaan, kebangsaan, demokrasi, dan keadilan.",
             "Pancasila menjadi pedoman menghadapi intoleransi, diskriminasi, konflik, korupsi, dan ketidakadilan."
         ]
     },
-    {
+
+    6: {
         id: 6,
         title: "Pancasila dan IPTEK",
         summary:
@@ -123,3096 +122,2448 @@ const MATERIAL_DATA = [
         points: [
             "IPTEK memberikan manfaat sekaligus risiko.",
             "IPTEK membutuhkan nilai karena penggunaannya dipengaruhi kepentingan manusia.",
-            "Pancasila sebagai filter IPTEK:",
-            "Sila 1: sesuai moral.",
-            "Sila 2: menjaga martabat manusia.",
-            "Sila 3: memperkuat persatuan.",
-            "Sila 4: bersifat inklusif.",
-            "Sila 5: manfaatnya harus adil.",
+            "Pancasila sebagai filter IPTEK: Sila 1: sesuai moral. Sila 2: menjaga martabat manusia. Sila 3: memperkuat persatuan. Sila 4: bersifat inklusif. Sila 5: manfaatnya harus adil.",
             "Contoh isu: AI, Big Data, privasi, diskriminasi algoritma, media sosial, dan disinformasi.",
             "Intinya: IPTEK harus memanusiakan manusia, bukan merugikan manusia."
         ]
-    }
-];
-
-
-/* =========================================================
-   GAME STATE
-   ========================================================= */
-
-const gameState = {
-    player: {
-        name: "",
-        x: 360,
-        y: 360,
-        targetX: 360,
-        targetY: 360,
-        speed: PLAYER_DEFAULT_SPEED,
-        avatar: CHARACTER_ASSETS.karakter1,
-        characterId: "karakter1",
-        customAvatar: false,
-        moving: false
-    },
-
-    camera: {
-        x: 0,
-        y: 0,
-        targetX: 0,
-        targetY: 0,
-        userControlled: false
-    },
-
-    materials: MATERIAL_DATA.map((material, index) => ({
-        ...material,
-        x: [
-            420,
-            870,
-            1320,
-            1800,
-            670,
-            1550
-        ][index],
-        y: [
-            350,
-            650,
-            330,
-            720,
-            1120,
-            1130
-        ][index],
-        status: index === 0 ? "available" : "locked",
-        completed: false
-    })),
-
-    portal: {
-        x: 2070,
-        y: 1220,
-        unlocked: false
-    },
-
-    gameStarted: false,
-    currentMaterial: null,
-    activeInteraction: null,
-    notificationTimer: null,
-
-    avatarEditor: {
-        file: null,
-        objectUrl: null,
-        sourceType: null,
-        imageWidth: 0,
-        imageHeight: 0,
-        offsetX: 0,
-        offsetY: 0,
-        zoom: 1,
-        dragging: false,
-        dragStartX: 0,
-        dragStartY: 0,
-        startOffsetX: 0,
-        startOffsetY: 0
-    },
-
-    input: {
-        pointerDown: false,
-        draggingCamera: false,
-        dragStartX: 0,
-        dragStartY: 0,
-        cameraStartX: 0,
-        cameraStartY: 0,
-        lastPointerX: 0,
-        lastPointerY: 0,
-        movedDistance: 0
     }
 };
 
 
 /* =========================================================
-   DOM REFERENCES
-   ========================================================= */
+   3. DOM REFERENCES
+========================================================= */
 
-const DOM = {};
+const DOM = {
+    app: document.getElementById("game-app"),
 
-function cacheDOM() {
-    DOM.gameContainer = document.getElementById("game-container");
+    startScreen: document.getElementById("start-screen"),
+    gameScreen: document.getElementById("game-screen"),
 
-    DOM.startScreen = document.getElementById("start-screen");
-    DOM.characterForm = document.getElementById("character-form");
-    DOM.playerNameInput = document.getElementById("player-name");
+    characterOptions: document.getElementById("character-options"),
+    avatarUpload: document.getElementById("avatar-upload"),
+    avatarCropArea: document.getElementById("avatar-crop-area"),
+    avatarCropContainer: document.getElementById("avatar-crop-container"),
+    avatarPreview: document.getElementById("avatar-upload-preview"),
+    cropZoomOut: document.getElementById("avatar-crop-zoom-out"),
+    cropReset: document.getElementById("avatar-crop-reset"),
+    cropZoomIn: document.getElementById("avatar-crop-zoom-in"),
+    avatarUploadInfo: document.getElementById("avatar-upload-info"),
 
-    DOM.characterOptions = document.getElementById("character-options");
-    DOM.characterInputs = document.querySelectorAll(
-        'input[name="character"]'
-    );
+    playerNameInput: document.getElementById("player-name"),
+    startButton: document.getElementById("start-game-button"),
 
-    DOM.avatarUpload = document.getElementById("avatar-upload");
-    DOM.avatarEditor = document.getElementById("avatar-editor");
-    DOM.cropStage = document.getElementById("crop-stage");
-    DOM.cropImage = document.getElementById("crop-image");
-    DOM.cropZoom = document.getElementById("crop-zoom");
-    DOM.cropApply = document.getElementById("crop-apply");
+    viewport: document.getElementById("game-viewport"),
+    world: document.getElementById("game-world"),
 
-    DOM.startGameButton = document.getElementById("start-game-button");
+    player: document.getElementById("player"),
+    playerAvatar: document.getElementById("player-avatar"),
+    playerNameLabel: document.getElementById("player-name-label"),
 
-    DOM.gameScreen = document.getElementById("game-screen");
-    DOM.gameHud = document.getElementById("game-hud");
-    DOM.gameViewport = document.getElementById("game-viewport");
-    DOM.gameWorld = document.getElementById("game-world");
+    hudPlayerName: document.getElementById("hud-player-name"),
+    progressCount: document.getElementById("progress-count"),
+    menuButton: document.getElementById("menu-button"),
 
-    DOM.player = document.getElementById("player");
-    DOM.playerNameTag = document.getElementById("player-name-tag");
-    DOM.playerAvatarImage = document.getElementById("player-avatar-image");
+    materialModal: document.getElementById("material-modal"),
+    materialModalTitle: document.getElementById("material-modal-title"),
+    materialModalNumber: document.getElementById("material-modal-number"),
+    materialSummary: document.getElementById("material-summary"),
+    materialPoints: document.getElementById("material-points"),
+    materialCompleteButton: document.getElementById("material-complete-button"),
+    materialCompletionIndicator: document.getElementById(
+        "material-completion-indicator"
+    ),
+    materialModalClose: document.getElementById("material-modal-close"),
 
-    DOM.progressElements = document.querySelectorAll(
-        "[data-progress], #progress-count, #learning-progress"
-    );
+    portal: document.getElementById("portal"),
+    portalButton: document.getElementById("portal-button"),
+    portalDescription: document.getElementById("portal-description"),
 
-    DOM.materialMenuButtons = document.querySelectorAll(
-        "[data-material-menu], #materials-button, .materials-button"
-    );
+    notification: document.getElementById("notification"),
+    notificationTitle: document.getElementById("notification-title"),
+    notificationMessage: document.getElementById("notification-message"),
+    notificationClose: document.getElementById("notification-close"),
 
-    DOM.helpButtons = document.querySelectorAll(
-        "[data-help], #help-button, .help-button"
-    );
+    instructionModal: document.getElementById("instruction-modal"),
+    instructionModalClose: document.getElementById("instruction-modal-close"),
+    instructionUnderstandButton: document.getElementById(
+        "instruction-understand-button"
+    ),
 
-    DOM.resetButtons = document.querySelectorAll(
-        "[data-reset], #reset-game-button, .reset-game-button"
-    );
+    menuConfirmationModal: document.getElementById(
+        "menu-confirmation-modal"
+    ),
+    menuConfirmationClose: document.getElementById(
+        "menu-confirmation-close"
+    ),
+    menuCancelButton: document.getElementById("menu-cancel-button"),
+    menuConfirmButton: document.getElementById("menu-confirm-button"),
 
-    DOM.materialPoints = Array.from(
-        document.querySelectorAll(".material-point")
-    );
-
-    DOM.portal = document.getElementById("quizizz-portal");
-
-    DOM.notification = document.getElementById("notification");
-
-    DOM.materialModal =
-        document.getElementById("material-modal") ||
-        document.querySelector(".material-modal");
-
-    DOM.materialTitle =
-        document.getElementById("material-title") ||
-        document.querySelector(".material-modal-title");
-
-    DOM.materialSummary =
-        document.getElementById("material-summary") ||
-        document.querySelector(".material-modal-summary");
-
-    DOM.materialPointsContent =
-        document.getElementById("material-points") ||
-        document.querySelector(".material-points-content");
-
-    DOM.materialNumber =
-        document.getElementById("material-number") ||
-        document.querySelector(".material-modal-number");
-
-    DOM.materialCompleteButton =
-        document.getElementById("complete-material-button") ||
-        document.getElementById("material-complete-button") ||
-        document.querySelector("[data-action='complete-material']");
-
-    DOM.materialCloseButton =
-        document.getElementById("close-material-button") ||
-        document.querySelector("[data-action='close-material']");
-
-    DOM.materialReadButton =
-        document.getElementById("read-material-button") ||
-        document.querySelector("[data-action='read-material']");
-
-    DOM.interactionPrompt =
-        document.getElementById("interaction-prompt") ||
-        document.querySelector(".interaction-prompt");
-
-    DOM.portalModal =
-        document.getElementById("portal-modal") ||
-        document.querySelector(".portal-modal");
-
-    DOM.quizizzButton =
-        document.getElementById("quizizz-button") ||
-        document.querySelector("[data-action='quizizz']");
-
-    DOM.closePortalButton =
-        document.getElementById("close-portal-button") ||
-        document.querySelector("[data-action='close-portal']");
-
-    DOM.cameraButtons = document.querySelectorAll(
-        "[data-camera], .camera-control"
-    );
-}
+    cameraControls: document.getElementById("camera-controls")
+};
 
 
 /* =========================================================
-   INITIALIZATION
-   ========================================================= */
+   4. GAME STATE
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", initGame);
+const gameState = {
+    selectedCharacter: null,
+    playerName: DEFAULT_PLAYER_NAME,
+    playerAvatar: null,
 
-function initGame() {
-    cacheDOM();
+    playerX: 1150,
+    playerY: 850,
 
-    setupWorldSize();
-    setupMaterialPoints();
-    setupPortal();
-    initCharacterSelection();
-    initCustomAvatar();
-    setupMaterialModal();
-    setupPortalModal();
-    setupCameraControls();
-    setupWorldMovement();
-    setupUIButtons();
+    cameraX: 0,
+    cameraY: 0,
 
-    loadGame();
+    targetX: null,
+    targetY: null,
 
-    updatePlayerDOM();
-    updateProgress();
-    updateMaterialVisuals();
-    updatePortalVisual();
+    completedMaterials: [],
 
-    if (gameState.gameStarted) {
-        showGameScreen();
-    } else {
-        showStartScreen();
+    portalUnlocked: false,
+    gameStarted: false,
+
+    activeMaterial: null,
+
+    moving: false,
+
+    pointer: {
+        active: false,
+        dragging: false,
+        startX: 0,
+        startY: 0,
+        lastX: 0,
+        lastY: 0,
+        totalMovement: 0
+    },
+
+    cameraDragStartX: 0,
+    cameraDragStartY: 0,
+
+    lastFrameTime: 0,
+
+    notificationTimer: null
+};
+
+
+/* =========================================================
+   5. CROP STATE
+========================================================= */
+
+const cropState = {
+    active: false,
+    file: null,
+    objectUrl: null,
+
+    isGif: false,
+
+    zoom: 1,
+    minZoom: 0.5,
+    maxZoom: 3,
+
+    offsetX: 0,
+    offsetY: 0,
+
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    initialOffsetX: 0,
+    initialOffsetY: 0,
+
+    croppedDataUrl: null
+};
+
+
+/* =========================================================
+   6. INITIALIZATION
+========================================================= */
+
+function init() {
+    if (!validateRequiredDOM()) {
+        return;
     }
 
-    gameLoop();
+    loadSavedPreferences();
+    createCropConfirmButton();
+    bindEventListeners();
+    initializeCharacterSelection();
+    initializeMaterials();
+    initializePortal();
+    initializePlayer();
+    initializeCropInterface();
+
+    DOM.gameScreen.hidden = true;
+    DOM.startScreen.hidden = false;
+
+    showInstructionOnce();
+    updateProgress();
+    updatePortalVisual();
+}
+
+function validateRequiredDOM() {
+    const required = [
+        DOM.startScreen,
+        DOM.gameScreen,
+        DOM.characterOptions,
+        DOM.avatarUpload,
+        DOM.playerNameInput,
+        DOM.startButton,
+        DOM.viewport,
+        DOM.world,
+        DOM.player,
+        DOM.playerAvatar,
+        DOM.playerNameLabel,
+        DOM.progressCount,
+        DOM.materialModal,
+        DOM.materialModalTitle,
+        DOM.materialSummary,
+        DOM.materialPoints,
+        DOM.materialCompleteButton,
+        DOM.portal,
+        DOM.portalButton,
+        DOM.notification
+    ];
+
+    const missing = required.filter((element) => !element);
+
+    if (missing.length > 0) {
+        console.error(
+            "Pancasila Game: elemen HTML yang diperlukan tidak ditemukan."
+        );
+        return false;
+    }
+
+    return true;
 }
 
 
 /* =========================================================
-   WORLD SETUP
-   ========================================================= */
+   7. LOCAL STORAGE
+========================================================= */
 
-function setupWorldSize() {
-    if (!DOM.gameWorld) return;
+function loadSavedPreferences() {
+    try {
+        const savedName = localStorage.getItem(STORAGE_KEYS.playerName);
+        const savedCharacter = localStorage.getItem(STORAGE_KEYS.character);
+        const savedProgress = localStorage.getItem(
+            STORAGE_KEYS.completedMaterials
+        );
 
-    DOM.gameWorld.style.width = `${WORLD_WIDTH}px`;
-    DOM.gameWorld.style.height = `${WORLD_HEIGHT}px`;
+        if (savedName) {
+            gameState.playerName = savedName;
+            DOM.playerNameInput.value = savedName;
+        }
+
+        if (
+            savedCharacter &&
+            Object.prototype.hasOwnProperty.call(
+                CHARACTER_ASSETS,
+                savedCharacter
+            )
+        ) {
+            gameState.selectedCharacter = savedCharacter;
+        }
+
+        if (savedProgress) {
+            const parsedProgress = JSON.parse(savedProgress);
+
+            if (Array.isArray(parsedProgress)) {
+                gameState.completedMaterials = parsedProgress
+                    .map(Number)
+                    .filter((id) => MATERIALS[id])
+                    .filter(
+                        (id, index, array) =>
+                            array.indexOf(id) === index
+                    );
+            }
+        }
+
+        gameState.portalUnlocked =
+            gameState.completedMaterials.length === 6;
+    } catch (error) {
+        console.warn(
+            "Pancasila Game: localStorage tidak dapat digunakan.",
+            error
+        );
+    }
 }
 
-function setupMaterialPoints() {
-    DOM.materialPoints.forEach((element, index) => {
-        const materialId =
-            Number(element.dataset.materialId) ||
-            Number(element.dataset.id) ||
-            index + 1;
+function saveProgress() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEYS.completedMaterials,
+            JSON.stringify(gameState.completedMaterials)
+        );
+    } catch (error) {
+        console.warn(
+            "Pancasila Game: progress tidak dapat disimpan.",
+            error
+        );
+    }
+}
 
-        const material = gameState.materials.find(
-            item => item.id === materialId
+function savePlayerPreferences() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEYS.playerName,
+            gameState.playerName
         );
 
-        if (!material) return;
-
-        element.dataset.materialId = String(material.id);
-
-        element.style.left = `${material.x}px`;
-        element.style.top = `${material.y}px`;
-
-        element.setAttribute(
-            "aria-label",
-            `Materi ${material.id}: ${material.title}`
+        if (gameState.selectedCharacter) {
+            localStorage.setItem(
+                STORAGE_KEYS.character,
+                gameState.selectedCharacter
+            );
+        }
+    } catch (error) {
+        console.warn(
+            "Pancasila Game: preferensi tidak dapat disimpan.",
+            error
         );
-
-        element.addEventListener("click", event => {
-            event.stopPropagation();
-
-            if (gameState.input.draggingCamera) return;
-
-            movePlayerTo(material.x, material.y, {
-                interaction: "material",
-                materialId: material.id
-            });
-        });
-    });
+    }
 }
 
 
 /* =========================================================
-   CHARACTER SELECTION
-   ========================================================= */
+   8. CHARACTER SELECTION
+========================================================= */
 
-function initCharacterSelection() {
-    if (!DOM.characterInputs.length) return;
+function initializeCharacterSelection() {
+    const options = DOM.characterOptions.querySelectorAll(
+        "[data-character-id]"
+    );
 
-    DOM.characterInputs.forEach(input => {
-        input.addEventListener("change", () => {
-            if (!input.checked) return;
+    options.forEach((option) => {
+        const characterId = option.dataset.characterId;
 
-            const characterId =
-                input.dataset.character ||
-                input.value ||
-                "karakter1";
+        if (characterId === gameState.selectedCharacter) {
+            selectCharacter(characterId);
+        }
 
+        option.addEventListener("click", () => {
             selectCharacter(characterId);
         });
+
+        option.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                selectCharacter(characterId);
+            }
+        });
     });
-
-    const checked =
-        document.querySelector('input[name="character"]:checked') ||
-        DOM.characterInputs[0];
-
-    if (checked) {
-        checked.checked = true;
-
-        selectCharacter(
-            checked.dataset.character ||
-            checked.value ||
-            "karakter1"
-        );
-    }
-
-    if (DOM.startGameButton) {
-        DOM.startGameButton.addEventListener("click", event => {
-            event.preventDefault();
-            startGame();
-        });
-    }
-
-    if (DOM.characterForm) {
-        DOM.characterForm.addEventListener("submit", event => {
-            event.preventDefault();
-            startGame();
-        });
-    }
 }
 
 function selectCharacter(characterId) {
-    const asset = CHARACTER_ASSETS[characterId];
+    if (!CHARACTER_ASSETS[characterId]) {
+        return;
+    }
 
-    if (!asset) return;
+    gameState.selectedCharacter = characterId;
 
-    gameState.player.characterId = characterId;
-    gameState.player.avatar = asset;
-    gameState.player.customAvatar = false;
-
-    DOM.characterInputs.forEach(input => {
-        const id =
-            input.dataset.character ||
-            input.value;
-
-        input.checked = id === characterId;
-    });
-
-    document
-        .querySelectorAll(
-            "[data-character-card], .character-card"
-        )
-        .forEach(card => {
-            const id =
-                card.dataset.character ||
-                card.dataset.characterId;
-
-            card.classList.toggle(
-                "selected",
-                id === characterId
-            );
-        });
-
-    updateCharacterPreview();
-}
-
-function updateCharacterPreview() {
-    const previews = document.querySelectorAll(
-        "[data-character-preview], #selected-character-preview"
+    const options = DOM.characterOptions.querySelectorAll(
+        "[data-character-id]"
     );
 
-    previews.forEach(preview => {
-        preview.src = gameState.player.avatar;
+    options.forEach((option) => {
+        const selected =
+            option.dataset.characterId === characterId;
+
+        option.classList.toggle("selected", selected);
+        option.setAttribute("aria-selected", String(selected));
     });
+
+    gameState.playerAvatar = CHARACTER_ASSETS[characterId];
+
+    if (!cropState.active) {
+        DOM.playerAvatar.src = CHARACTER_ASSETS[characterId];
+    }
+
+    savePlayerPreferences();
 }
 
 
 /* =========================================================
-   CUSTOM AVATAR
-   ========================================================= */
+   9. CUSTOM AVATAR
+========================================================= */
 
-function initCustomAvatar() {
-    if (!DOM.avatarUpload) return;
-
-    DOM.avatarUpload.addEventListener(
-        "change",
-        handleAvatarUpload
-    );
-
-    if (DOM.cropZoom) {
-        DOM.cropZoom.addEventListener("input", () => {
-            gameState.avatarEditor.zoom =
-                Number(DOM.cropZoom.value) || 1;
-
-            updateCropPreview();
-        });
+function initializeCropInterface() {
+    if (!DOM.avatarPreview) {
+        return;
     }
 
-    if (DOM.cropApply) {
-        DOM.cropApply.addEventListener("click", event => {
-            event.preventDefault();
-            applyAvatarCrop();
-        });
-    }
+    DOM.cropZoomIn?.addEventListener("click", () => {
+        if (!cropState.active || cropState.isGif) {
+            return;
+        }
 
-    setupCropper();
+        cropState.zoom = Math.min(
+            cropState.maxZoom,
+            cropState.zoom + 0.1
+        );
 
-    const dropZones = document.querySelectorAll(
-        "[data-avatar-drop], .avatar-upload-area, .upload-avatar"
-    );
-
-    dropZones.forEach(zone => {
-        zone.addEventListener("dragover", event => {
-            event.preventDefault();
-            zone.classList.add("drag-over");
-        });
-
-        zone.addEventListener("dragleave", () => {
-            zone.classList.remove("drag-over");
-        });
-
-        zone.addEventListener("drop", event => {
-            event.preventDefault();
-            zone.classList.remove("drag-over");
-
-            const file = event.dataTransfer.files?.[0];
-
-            if (file) {
-                processAvatarFile(file);
-            }
-        });
+        renderCropPreview();
     });
+
+    DOM.cropZoomOut?.addEventListener("click", () => {
+        if (!cropState.active || cropState.isGif) {
+            return;
+        }
+
+        cropState.zoom = Math.max(
+            cropState.minZoom,
+            cropState.zoom - 0.1
+        );
+
+        renderCropPreview();
+    });
+
+    DOM.cropReset?.addEventListener("click", resetCrop);
+
+    DOM.avatarUpload.addEventListener("change", handleAvatarFile);
 }
 
-function handleAvatarUpload(event) {
+function createCropConfirmButton() {
+    if (!DOM.avatarCropContainer) {
+        return;
+    }
+
+    const controls = document.getElementById("avatar-crop-controls");
+
+    if (!controls || document.getElementById("avatar-crop-confirm")) {
+        return;
+    }
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.id = "avatar-crop-confirm";
+    button.setAttribute("aria-label", "Konfirmasi crop avatar");
+    button.textContent = "Gunakan Avatar";
+
+    button.addEventListener("click", confirmAvatarCrop);
+
+    controls.appendChild(button);
+}
+
+function handleAvatarFile(event) {
     const file = event.target.files?.[0];
 
-    if (!file) return;
-
-    processAvatarFile(file);
-}
-
-function processAvatarFile(file) {
-    const acceptedTypes = [
-        "image/png",
-        "image/jpeg",
-        "image/gif",
-        "image/webp"
-    ];
-
-    const fileExtension = file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
-
-    const extensionAllowed = [
-        "png",
-        "jpg",
-        "jpeg",
-        "gif",
-        "webp"
-    ].includes(fileExtension);
-
-    if (
-        !acceptedTypes.includes(file.type) &&
-        !extensionAllowed
-    ) {
-        showNotification(
-            "Format avatar tidak valid. Gunakan PNG, JPG/JPEG, GIF, atau WEBP."
-        );
+    if (!file) {
         return;
     }
 
-    if (file.size > MAX_AVATAR_FILE_SIZE) {
+    if (!file.type.startsWith("image/")) {
         showNotification(
-            "Ukuran avatar terlalu besar. Maksimal 10 MB."
+            "File Tidak Valid",
+            "Silakan pilih file gambar yang didukung browser."
         );
+
+        event.target.value = "";
         return;
     }
 
-    gameState.avatarEditor.file = file;
+    if (file.size > MAX_AVATAR_SIZE) {
+        showNotification(
+            "File Terlalu Besar",
+            "Ukuran avatar maksimal adalah 10 MB."
+        );
 
-    const isGIF =
+        event.target.value = "";
+        return;
+    }
+
+    clearCropObjectUrl();
+
+    cropState.file = file;
+    cropState.active = true;
+    cropState.isGif =
         file.type === "image/gif" ||
-        fileExtension === "gif";
+        file.name.toLowerCase().endsWith(".gif");
 
-    gameState.avatarEditor.sourceType = isGIF
-        ? "gif"
-        : fileExtension;
+    cropState.zoom = 1;
+    cropState.offsetX = 0;
+    cropState.offsetY = 0;
+    cropState.croppedDataUrl = null;
 
     const objectUrl = URL.createObjectURL(file);
 
-    if (gameState.avatarEditor.objectUrl) {
-        URL.revokeObjectURL(
-            gameState.avatarEditor.objectUrl
-        );
-    }
+    cropState.objectUrl = objectUrl;
 
-    gameState.avatarEditor.objectUrl = objectUrl;
+    DOM.avatarPreview.src = objectUrl;
+    DOM.avatarPreview.hidden = false;
 
-    if (isGIF) {
-        /*
-         * Animated GIF is intentionally kept as an image URL.
-         * Canvas cropping is skipped because drawing a GIF onto
-         * canvas would normally reduce it to a static frame.
-         */
-        gameState.player.avatar = objectUrl;
-        gameState.player.customAvatar = true;
-
-        if (DOM.cropImage) {
-            DOM.cropImage.src = objectUrl;
+    DOM.avatarPreview.onload = () => {
+        if (cropState.isGif) {
+            handleGifAvatar();
+        } else {
+            initializeCropPosition();
+            renderCropPreview();
         }
+    };
+}
 
-        if (DOM.avatarEditor) {
-            DOM.avatarEditor.classList.add("gif-preview");
-            DOM.avatarEditor.classList.add("active");
-        }
+function handleGifAvatar() {
+    cropState.zoom = 1;
+    cropState.offsetX = 0;
+    cropState.offsetY = 0;
 
-        showNotification(
-            "GIF dipertahankan sebagai avatar animasi."
-        );
+    DOM.avatarPreview.style.transform =
+        "translate(-50%, -50%) scale(1)";
 
-        updateCharacterPreview();
+    DOM.avatarUploadInfo.textContent =
+        "GIF animasi dipertahankan sebagai GIF asli. Crop animasi memiliki keterbatasan browser sehingga file GIF asli akan digunakan.";
+
+    showNotification(
+        "GIF Dipilih",
+        "Animasi GIF akan dipertahankan. Browser tidak dapat melakukan crop GIF animasi secara native tanpa merasterisasi animasinya."
+    );
+}
+
+function initializeCropPosition() {
+    const image = DOM.avatarPreview;
+
+    if (!image.naturalWidth || !image.naturalHeight) {
         return;
     }
 
-    gameState.avatarEditor.zoom = 1;
-    gameState.avatarEditor.offsetX = 0;
-    gameState.avatarEditor.offsetY = 0;
+    const containerWidth =
+        DOM.avatarCropContainer.clientWidth;
+    const containerHeight =
+        DOM.avatarCropContainer.clientHeight;
 
-    if (DOM.cropZoom) {
-        DOM.cropZoom.value = "1";
-    }
+    const scale = Math.max(
+        containerWidth / image.naturalWidth,
+        containerHeight / image.naturalHeight
+    );
 
-    const image = new Image();
+    cropState.minZoom = scale;
+    cropState.maxZoom = Math.max(scale * 3, scale + 1);
+    cropState.zoom = scale;
 
-    image.onload = () => {
-        gameState.avatarEditor.imageWidth =
-            image.naturalWidth;
+    cropState.offsetX = 0;
+    cropState.offsetY = 0;
 
-        gameState.avatarEditor.imageHeight =
-            image.naturalHeight;
-
-        if (DOM.cropImage) {
-            DOM.cropImage.src = objectUrl;
-        }
-
-        if (DOM.avatarEditor) {
-            DOM.avatarEditor.classList.remove(
-                "gif-preview"
-            );
-
-            DOM.avatarEditor.classList.add("active");
-        }
-
-        updateCropPreview();
-    };
-
-    image.onerror = () => {
-        showNotification(
-            "Avatar tidak dapat dibaca oleh browser."
-        );
-    };
-
-    image.src = objectUrl;
+    DOM.avatarUploadInfo.textContent =
+        "Geser gambar untuk menentukan posisi crop 1:1. Gunakan tombol + dan − untuk mengatur zoom.";
 }
 
-function setupCropper() {
-    if (!DOM.cropStage) return;
+function renderCropPreview() {
+    if (!cropState.active || cropState.isGif) {
+        return;
+    }
 
-    DOM.cropStage.addEventListener(
+    DOM.avatarPreview.style.transform =
+        `translate(calc(-50% + ${cropState.offsetX}px), calc(-50% + ${cropState.offsetY}px)) scale(${cropState.zoom})`;
+}
+
+function resetCrop() {
+    if (!cropState.active) {
+        return;
+    }
+
+    if (cropState.isGif) {
+        cropState.zoom = 1;
+        cropState.offsetX = 0;
+        cropState.offsetY = 0;
+
+        DOM.avatarPreview.style.transform =
+            "translate(-50%, -50%) scale(1)";
+
+        return;
+    }
+
+    initializeCropPosition();
+    renderCropPreview();
+}
+
+function confirmAvatarCrop() {
+    if (!cropState.file || !cropState.active) {
+        return;
+    }
+
+    if (cropState.isGif) {
+        gameState.playerAvatar = cropState.objectUrl;
+
+        DOM.playerAvatar.src = cropState.objectUrl;
+
+        showNotification(
+            "Avatar Siap",
+            "GIF asli digunakan agar animasinya tetap terjaga."
+        );
+
+        return;
+    }
+
+    createCroppedAvatar()
+        .then((dataUrl) => {
+            gameState.playerAvatar = dataUrl;
+            cropState.croppedDataUrl = dataUrl;
+
+            DOM.playerAvatar.src = dataUrl;
+
+            DOM.avatarUploadInfo.textContent =
+                "Avatar berhasil dicrop dan siap digunakan.";
+
+            showNotification(
+                "Avatar Siap",
+                "Avatar berhasil dicrop dengan rasio 1:1."
+            );
+        })
+        .catch((error) => {
+            console.error(
+                "Pancasila Game: crop avatar gagal.",
+                error
+            );
+
+            showNotification(
+                "Crop Gagal",
+                "Avatar tidak dapat diproses. Silakan coba gambar lain."
+            );
+        });
+}
+
+function createCroppedAvatar() {
+    return new Promise((resolve, reject) => {
+        const image = DOM.avatarPreview;
+
+        if (!image.naturalWidth || !image.naturalHeight) {
+            reject(new Error("Ukuran gambar tidak tersedia."));
+            return;
+        }
+
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+            reject(new Error("Canvas tidak didukung browser."));
+            return;
+        }
+
+        const cropSize = Math.min(
+            image.naturalWidth,
+            image.naturalHeight
+        );
+
+        canvas.width = cropSize;
+        canvas.height = cropSize;
+
+        const baseScale = Math.max(
+            DOM.avatarCropContainer.clientWidth /
+                image.naturalWidth,
+            DOM.avatarCropContainer.clientHeight /
+                image.naturalHeight
+        );
+
+        const effectiveScale =
+            baseScale > 0
+                ? cropState.zoom / baseScale
+                : 1;
+
+        const displayedWidth =
+            image.naturalWidth * effectiveScale;
+
+        const displayedHeight =
+            image.naturalHeight * effectiveScale;
+
+        const containerWidth =
+            DOM.avatarCropContainer.clientWidth;
+
+        const containerHeight =
+            DOM.avatarCropContainer.clientHeight;
+
+        const imageLeft =
+            (containerWidth - displayedWidth) / 2 +
+            cropState.offsetX;
+
+        const imageTop =
+            (containerHeight - displayedHeight) / 2 +
+            cropState.offsetY;
+
+        const sourceX =
+            Math.max(
+                0,
+                -imageLeft / effectiveScale
+            );
+
+        const sourceY =
+            Math.max(
+                0,
+                -imageTop / effectiveScale
+            );
+
+        const sourceSize =
+            containerWidth / effectiveScale;
+
+        const safeSourceSize = Math.min(
+            sourceSize,
+            cropSize
+        );
+
+        try {
+            context.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            context.drawImage(
+                image,
+                sourceX,
+                sourceY,
+                safeSourceSize,
+                safeSourceSize,
+                0,
+                0,
+                cropSize,
+                cropSize
+            );
+
+            resolve(
+                canvas.toDataURL(
+                    "image/png",
+                    0.92
+                )
+            );
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function clearCropObjectUrl() {
+    if (cropState.objectUrl) {
+        URL.revokeObjectURL(cropState.objectUrl);
+        cropState.objectUrl = null;
+    }
+}
+
+function initializeCropPointerEvents() {
+    if (!DOM.avatarCropContainer) {
+        return;
+    }
+
+    DOM.avatarCropContainer.addEventListener(
         "pointerdown",
-        event => {
-            if (
-                gameState.avatarEditor.sourceType === "gif"
-            ) {
+        (event) => {
+            if (!cropState.active || cropState.isGif) {
                 return;
             }
 
-            gameState.avatarEditor.dragging = true;
+            cropState.dragging = true;
+            cropState.dragStartX = event.clientX;
+            cropState.dragStartY = event.clientY;
+            cropState.initialOffsetX = cropState.offsetX;
+            cropState.initialOffsetY = cropState.offsetY;
 
-            gameState.avatarEditor.dragStartX =
-                event.clientX;
-
-            gameState.avatarEditor.dragStartY =
-                event.clientY;
-
-            gameState.avatarEditor.startOffsetX =
-                gameState.avatarEditor.offsetX;
-
-            gameState.avatarEditor.startOffsetY =
-                gameState.avatarEditor.offsetY;
-
-            DOM.cropStage.setPointerCapture?.(
+            DOM.avatarCropContainer.setPointerCapture(
                 event.pointerId
             );
         }
     );
 
-    DOM.cropStage.addEventListener(
+    DOM.avatarCropContainer.addEventListener(
         "pointermove",
-        event => {
-            if (
-                !gameState.avatarEditor.dragging ||
-                gameState.avatarEditor.sourceType === "gif"
-            ) {
+        (event) => {
+            if (!cropState.dragging) {
                 return;
             }
 
-            const dx =
-                event.clientX -
-                gameState.avatarEditor.dragStartX;
+            cropState.offsetX =
+                cropState.initialOffsetX +
+                (event.clientX - cropState.dragStartX);
 
-            const dy =
-                event.clientY -
-                gameState.avatarEditor.dragStartY;
+            cropState.offsetY =
+                cropState.initialOffsetY +
+                (event.clientY - cropState.dragStartY);
 
-            gameState.avatarEditor.offsetX =
-                gameState.avatarEditor.startOffsetX + dx;
-
-            gameState.avatarEditor.offsetY =
-                gameState.avatarEditor.startOffsetY + dy;
-
-            updateCropPreview();
+            renderCropPreview();
         }
     );
 
-    const stopDragging = () => {
-        gameState.avatarEditor.dragging = false;
+    const stopDragging = (event) => {
+        if (!cropState.dragging) {
+            return;
+        }
+
+        cropState.dragging = false;
+
+        try {
+            DOM.avatarCropContainer.releasePointerCapture(
+                event.pointerId
+            );
+        } catch {
+            /* Pointer capture may already be released. */
+        }
     };
 
-    DOM.cropStage.addEventListener(
+    DOM.avatarCropContainer.addEventListener(
         "pointerup",
         stopDragging
     );
 
-    DOM.cropStage.addEventListener(
+    DOM.avatarCropContainer.addEventListener(
         "pointercancel",
         stopDragging
     );
+}
 
-    DOM.cropStage.addEventListener(
-        "pointerleave",
-        event => {
+
+/* =========================================================
+   10. PLAYER INITIALIZATION
+========================================================= */
+
+function initializePlayer() {
+    DOM.player.style.left = `${gameState.playerX}px`;
+    DOM.player.style.top = `${gameState.playerY}px`;
+
+    DOM.playerNameLabel.textContent =
+        gameState.playerName;
+
+    if (gameState.selectedCharacter) {
+        DOM.playerAvatar.src =
+            CHARACTER_ASSETS[
+                gameState.selectedCharacter
+            ];
+    }
+}
+
+function preparePlayer() {
+    const name =
+        DOM.playerNameInput.value.trim() ||
+        DEFAULT_PLAYER_NAME;
+
+    gameState.playerName = name;
+
+    DOM.playerNameLabel.textContent =
+        gameState.playerName;
+
+    DOM.hudPlayerName.textContent =
+        gameState.playerName;
+
+    let avatar = gameState.playerAvatar;
+
+    if (!avatar && gameState.selectedCharacter) {
+        avatar =
+            CHARACTER_ASSETS[
+                gameState.selectedCharacter
+            ];
+    }
+
+    if (!avatar) {
+        avatar = CHARACTER_ASSETS.karakter1;
+        gameState.selectedCharacter = "karakter1";
+    }
+
+    gameState.playerAvatar = avatar;
+
+    DOM.playerAvatar.src = avatar;
+
+    DOM.player.style.left =
+        `${gameState.playerX}px`;
+
+    DOM.player.style.top =
+        `${gameState.playerY}px`;
+
+    savePlayerPreferences();
+}
+
+
+/* =========================================================
+   11. START GAME
+========================================================= */
+
+function startGame() {
+    const name =
+        DOM.playerNameInput.value.trim();
+
+    if (!gameState.selectedCharacter && !gameState.playerAvatar) {
+        showNotification(
+            "Pilih Karakter",
+            "Silakan pilih salah satu karakter terlebih dahulu."
+        );
+        return;
+    }
+
+    if (!name) {
+        DOM.playerNameInput.focus();
+
+        showNotification(
+            "Nama Belum Diisi",
+            "Masukkan nama pemain sebelum memulai permainan."
+        );
+
+        return;
+    }
+
+    preparePlayer();
+
+    gameState.gameStarted = true;
+    gameState.targetX = null;
+    gameState.targetY = null;
+    gameState.moving = false;
+
+    DOM.startScreen.hidden = true;
+    DOM.gameScreen.hidden = false;
+
+    requestAnimationFrame(() => {
+        centerCameraOnPlayer();
+        updateProgress();
+        updateAllMaterialVisuals();
+        updatePortalVisual();
+
+        showNotification(
+            "Permainan Dimulai",
+            "Klik atau ketuk area map untuk menggerakkan karakter. Jelajahi keenam materi Pancasila."
+        );
+    });
+}
+
+
+/* =========================================================
+   12. MATERIAL INITIALIZATION
+========================================================= */
+
+function initializeMaterials() {
+    Object.keys(MATERIALS).forEach((id) => {
+        const materialElement =
+            document.getElementById(`materi-${id}`);
+
+        if (!materialElement) {
+            return;
+        }
+
+        materialElement.dataset.status =
+            isMaterialCompleted(Number(id))
+                ? "completed"
+                : "locked";
+
+        const button =
+            materialElement.querySelector(
+                ".material-open-button"
+            );
+
+        if (button) {
+            button.addEventListener(
+                "click",
+                (event) => {
+                    event.stopPropagation();
+
+                    handleMaterialRequest(
+                        Number(id)
+                    );
+                }
+            );
+        }
+
+        materialElement.addEventListener(
+            "click",
+            (event) => {
+                if (
+                    event.target.closest(
+                        ".material-open-button"
+                    )
+                ) {
+                    return;
+                }
+
+                handleMaterialRequest(
+                    Number(id)
+                );
+            }
+        );
+    });
+
+    updateAllMaterialVisuals();
+}
+
+function handleMaterialRequest(materialId) {
+    if (!gameState.gameStarted) {
+        return;
+    }
+
+    if (!MATERIALS[materialId]) {
+        return;
+    }
+
+    if (isMaterialCompleted(materialId)) {
+        openMaterial(materialId);
+        return;
+    }
+
+    const element =
+        document.getElementById(
+            `materi-${materialId}`
+        );
+
+    if (!element) {
+        return;
+    }
+
+    const position =
+        getElementWorldCenter(element);
+
+    const distance =
+        distanceBetween(
+            gameState.playerX,
+            gameState.playerY,
+            position.x,
+            position.y
+        );
+
+    if (distance <= INTERACTION_DISTANCE) {
+        openMaterial(materialId);
+        return;
+    }
+
+    setMovementTarget(
+        position.x,
+        position.y,
+        () => {
             if (
-                gameState.avatarEditor.dragging &&
-                event.buttons === 0
+                distanceBetween(
+                    gameState.playerX,
+                    gameState.playerY,
+                    position.x,
+                    position.y
+                ) <= INTERACTION_DISTANCE + 10
             ) {
-                stopDragging();
+                openMaterial(materialId);
             }
         }
     );
+
+    showNotification(
+        "Menuju Materi",
+        `Karakter sedang menuju Materi ${materialId}.`
+    );
 }
 
-function updateCropPreview() {
-    if (!DOM.cropImage) return;
 
-    if (
-        gameState.avatarEditor.sourceType === "gif"
-    ) {
-        DOM.cropImage.style.transform = "none";
+/* =========================================================
+   13. MATERIAL OPEN / COMPLETE
+========================================================= */
+
+function openMaterial(materialId) {
+    const material = MATERIALS[materialId];
+
+    if (!material) {
         return;
     }
 
-    const zoom = gameState.avatarEditor.zoom || 1;
+    gameState.activeMaterial = materialId;
 
-    DOM.cropImage.style.transform =
-        `translate(calc(-50% + ${gameState.avatarEditor.offsetX}px), ` +
-        `calc(-50% + ${gameState.avatarEditor.offsetY}px)) ` +
-        `scale(${zoom})`;
+    DOM.materialModalNumber.textContent =
+        `Materi ${material.id}`;
 
-    DOM.cropImage.style.transformOrigin = "center center";
+    DOM.materialModalTitle.textContent =
+        material.title;
+
+    DOM.materialSummary.textContent =
+        material.summary;
+
+    DOM.materialPoints.replaceChildren();
+
+    material.points.forEach((point) => {
+        const listItem =
+            document.createElement("li");
+
+        listItem.textContent = point;
+
+        DOM.materialPoints.appendChild(
+            listItem
+        );
+    });
+
+    const completed =
+        isMaterialCompleted(materialId);
+
+    DOM.materialCompletionIndicator.textContent =
+        completed
+            ? "Materi sudah selesai"
+            : "Materi belum selesai";
+
+    DOM.materialCompletionIndicator.classList.toggle(
+        "completed",
+        completed
+    );
+
+    DOM.materialCompleteButton.textContent =
+        completed
+            ? "Selesai"
+            : "Tandai Selesai";
+
+    DOM.materialCompleteButton.classList.toggle(
+        "completed",
+        completed
+    );
+
+    DOM.materialCompleteButton.disabled =
+        completed;
+
+    DOM.materialModal.hidden = false;
+
+    document.body.style.overflow = "hidden";
 }
 
-function applyAvatarCrop() {
-    const file = gameState.avatarEditor.file;
+function completeActiveMaterial() {
+    const materialId =
+        gameState.activeMaterial;
 
-    if (!file) {
-        showNotification("Pilih avatar terlebih dahulu.");
+    if (!materialId) {
         return;
     }
 
-    if (
-        gameState.avatarEditor.sourceType === "gif"
-    ) {
-        /*
-         * Preserve animated GIF rather than destroying animation.
-         */
-        gameState.player.avatar =
-            gameState.avatarEditor.objectUrl;
-
-        gameState.player.customAvatar = true;
-
-        updateCharacterPreview();
-
-        showNotification(
-            "Avatar GIF digunakan tanpa mengubah animasinya."
-        );
-
+    if (isMaterialCompleted(materialId)) {
+        closeMaterialModal();
         return;
     }
 
-    if (!DOM.cropImage) return;
-
-    const source = DOM.cropImage;
-
-    if (
-        !source.naturalWidth ||
-        !source.naturalHeight
-    ) {
-        showNotification(
-            "Tunggu hingga avatar selesai dimuat."
-        );
-        return;
-    }
-
-    const cropSize = 512;
-
-    const canvas = document.createElement("canvas");
-
-    canvas.width = cropSize;
-    canvas.height = cropSize;
-
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-        showNotification(
-            "Browser tidak mendukung pemrosesan avatar."
-        );
-        return;
-    }
-
-    /*
-     * Canvas default transparency is preserved.
-     * No background is painted.
-     */
-    context.clearRect(
-        0,
-        0,
-        cropSize,
-        cropSize
+    gameState.completedMaterials.push(
+        Number(materialId)
     );
 
-    const stageRect =
-        DOM.cropStage?.getBoundingClientRect();
+    gameState.completedMaterials =
+        [...new Set(
+            gameState.completedMaterials
+                .map(Number)
+                .filter((id) => MATERIALS[id])
+        )];
 
-    const stageSize =
-        stageRect?.width || 300;
+    saveProgress();
 
-    const imageRatio =
-        source.naturalWidth /
-        source.naturalHeight;
+    updateProgress();
+    updateMaterialVisual(materialId);
 
-    let displayWidth;
-    let displayHeight;
-
-    if (imageRatio >= 1) {
-        displayHeight = stageSize;
-        displayWidth =
-            stageSize * imageRatio;
-    } else {
-        displayWidth = stageSize;
-        displayHeight =
-            stageSize / imageRatio;
-    }
-
-    const zoom =
-        gameState.avatarEditor.zoom || 1;
-
-    displayWidth *= zoom;
-    displayHeight *= zoom;
-
-    const baseX =
-        (stageSize - displayWidth) / 2;
-
-    const baseY =
-        (stageSize - displayHeight) / 2;
-
-    const displayedX =
-        baseX +
-        gameState.avatarEditor.offsetX;
-
-    const displayedY =
-        baseY +
-        gameState.avatarEditor.offsetY;
-
-    const sourceScale =
-        source.naturalWidth /
-        displayWidth;
-
-    const sourceX =
-        -displayedX *
-        sourceScale;
-
-    const sourceY =
-        -displayedY *
-        sourceScale;
-
-    const sourceSize =
-        stageSize *
-        sourceScale;
-
-    context.drawImage(
-        source,
-        sourceX,
-        sourceY,
-        sourceSize,
-        sourceSize,
-        0,
-        0,
-        cropSize,
-        cropSize
+    showNotification(
+        "Materi Selesai",
+        `Materi ${materialId} selesai dipelajari.`
     );
 
-    canvas.toBlob(
-        blob => {
-            if (!blob) {
+    if (
+        gameState.completedMaterials.length === 6
+    ) {
+        unlockPortal();
+    }
+
+    closeMaterialModal();
+}
+
+function closeMaterialModal() {
+    DOM.materialModal.hidden = true;
+    gameState.activeMaterial = null;
+
+    if (
+        DOM.instructionModal.hidden &&
+        DOM.menuConfirmationModal.hidden
+    ) {
+        document.body.style.overflow = "";
+    }
+}
+
+function isMaterialCompleted(materialId) {
+    return gameState.completedMaterials.includes(
+        Number(materialId)
+    );
+}
+
+
+/* =========================================================
+   14. MATERIAL VISUAL STATE
+========================================================= */
+
+function updateAllMaterialVisuals() {
+    Object.keys(MATERIALS).forEach((id) => {
+        updateMaterialVisual(Number(id));
+    });
+}
+
+function updateMaterialVisual(materialId) {
+    const element =
+        document.getElementById(
+            `materi-${materialId}`
+        );
+
+    if (!element) {
+        return;
+    }
+
+    const completed =
+        isMaterialCompleted(materialId);
+
+    const statusElement =
+        element.querySelector(
+            ".material-status"
+        );
+
+    const button =
+        element.querySelector(
+            ".material-open-button"
+        );
+
+    element.classList.remove(
+        "locked",
+        "unlocked",
+        "completed"
+    );
+
+    if (completed) {
+        element.classList.add("completed");
+        element.dataset.status = "completed";
+
+        if (statusElement) {
+            statusElement.textContent =
+                "Selesai";
+        }
+
+        if (button) {
+            button.textContent = "Pelajari Lagi";
+        }
+
+        return;
+    }
+
+    element.classList.add("unlocked");
+    element.dataset.status = "unlocked";
+
+    if (statusElement) {
+        statusElement.textContent =
+            "Belum selesai";
+    }
+
+    if (button) {
+        button.textContent = "Buka Materi";
+    }
+}
+
+
+/* =========================================================
+   15. PROGRESS
+========================================================= */
+
+function updateProgress() {
+    const completedCount =
+        gameState.completedMaterials.length;
+
+    DOM.progressCount.textContent =
+        `${completedCount}/6`;
+}
+
+
+/* =========================================================
+   16. PORTAL
+========================================================= */
+
+function initializePortal() {
+    DOM.portalButton.addEventListener(
+        "click",
+        (event) => {
+            event.stopPropagation();
+
+            if (!gameState.portalUnlocked) {
                 showNotification(
-                    "Avatar gagal diproses."
+                    "Portal Terkunci",
+                    "Selesaikan keenam materi terlebih dahulu."
                 );
+
                 return;
             }
 
-            const croppedUrl =
-                URL.createObjectURL(blob);
+            usePortal();
+        }
+    );
 
+    DOM.portal.addEventListener(
+        "click",
+        (event) => {
             if (
-                gameState.avatarEditor.objectUrl
+                event.target.closest(
+                    "#portal-button"
+                )
             ) {
-                URL.revokeObjectURL(
-                    gameState.avatarEditor.objectUrl
-                );
+                return;
             }
 
-            gameState.avatarEditor.objectUrl =
-                croppedUrl;
-
-            gameState.player.avatar =
-                croppedUrl;
-
-            gameState.player.customAvatar =
-                true;
-
-            updateCharacterPreview();
-
-            showNotification(
-                "Avatar berhasil disesuaikan."
-            );
-        },
-        "image/png",
-        0.95
+            handlePortalRequest();
+        }
     );
+
+    updatePortalVisual();
 }
 
-
-/* =========================================================
-   START GAME
-   ========================================================= */
-
-function startGame() {
-    const enteredName =
-        DOM.playerNameInput?.value?.trim() || "";
-
-    if (!enteredName) {
-        showNotification(
-            "Masukkan nama pemain terlebih dahulu."
-        );
-
-        DOM.playerNameInput?.focus();
+function handlePortalRequest() {
+    if (!gameState.gameStarted) {
         return;
     }
 
-    gameState.player.name =
-        enteredName.slice(0, 40);
-
-    const selectedCharacter =
-        document.querySelector(
-            'input[name="character"]:checked'
+    const portalCenter =
+        getElementWorldCenter(
+            DOM.portal
         );
 
-    if (
-        selectedCharacter &&
-        !gameState.player.customAvatar
-    ) {
-        const characterId =
-            selectedCharacter.dataset.character ||
-            selectedCharacter.value ||
-            "karakter1";
+    const distance =
+        distanceBetween(
+            gameState.playerX,
+            gameState.playerY,
+            portalCenter.x,
+            portalCenter.y
+        );
 
-        selectCharacter(characterId);
+    if (!gameState.portalUnlocked) {
+        if (
+            gameState.completedMaterials.length < 6
+        ) {
+            showNotification(
+                "Portal Terkunci",
+                "Selesaikan semua 6 materi untuk membuka portal."
+            );
+        }
+
+        return;
     }
 
-    gameState.gameStarted = true;
+    if (distance <= INTERACTION_DISTANCE + 20) {
+        usePortal();
+        return;
+    }
 
-    saveGame();
+    setMovementTarget(
+        portalCenter.x,
+        portalCenter.y,
+        () => {
+            const newDistance =
+                distanceBetween(
+                    gameState.playerX,
+                    gameState.playerY,
+                    portalCenter.x,
+                    portalCenter.y
+                );
 
-    showGameScreen();
+            if (
+                newDistance <=
+                INTERACTION_DISTANCE + 20
+            ) {
+                usePortal();
+            }
+        }
+    );
 
-    centerCameraOnPlayer(true);
+    showNotification(
+        "Menuju Portal",
+        "Karakter sedang menuju portal."
+    );
+}
 
-    updatePlayerDOM();
-    updateProgress();
-    updateMaterialVisuals();
+function unlockPortal() {
+    if (gameState.portalUnlocked) {
+        return;
+    }
+
+    if (
+        gameState.completedMaterials.length !== 6
+    ) {
+        return;
+    }
+
+    gameState.portalUnlocked = true;
+
     updatePortalVisual();
 
     showNotification(
-        `Selamat datang, ${gameState.player.name}! Jelajahi map dan pelajari keenam materi.`
+        "Portal Terbuka!",
+        "Semua materi telah selesai dipelajari. Portal telah terbuka!"
     );
 }
 
-function showStartScreen() {
-    DOM.startScreen?.classList.remove(
-        "hidden",
-        "is-hidden"
+function updatePortalVisual() {
+    const unlocked =
+        gameState.completedMaterials.length === 6 ||
+        gameState.portalUnlocked;
+
+    gameState.portalUnlocked = unlocked;
+
+    DOM.portal.dataset.status =
+        unlocked ? "open" : "locked";
+
+    DOM.portal.classList.toggle(
+        "open",
+        unlocked
     );
 
-    DOM.gameScreen?.classList.remove(
-        "active"
+    DOM.portal.classList.toggle(
+        "locked",
+        !unlocked
     );
 
-    DOM.gameScreen?.classList.add(
-        "hidden"
-    );
+    DOM.portalButton.disabled =
+        !unlocked;
 
-    if (DOM.playerNameInput) {
-        DOM.playerNameInput.value =
-            gameState.player.name || "";
+    DOM.portalButton.textContent =
+        unlocked
+            ? "Masuk Portal"
+            : "Portal Terkunci";
+
+    DOM.portalDescription.textContent =
+        unlocked
+            ? "Semua materi selesai. Portal siap digunakan."
+            : "Selesaikan seluruh materi untuk membuka portal.";
+}
+
+function usePortal() {
+    if (!gameState.portalUnlocked) {
+        return;
     }
-}
 
-function showGameScreen() {
-    DOM.startScreen?.classList.add("hidden");
-
-    DOM.gameScreen?.classList.remove(
-        "hidden",
-        "is-hidden"
-    );
-
-    DOM.gameScreen?.classList.add(
-        "active"
-    );
+    window.location.href = QUIZ_URL;
 }
 
 
 /* =========================================================
-   PLAYER MOVEMENT
-   ========================================================= */
+   17. PLAYER MOVEMENT
+========================================================= */
 
-function movePlayerTo(
-    x,
-    y,
-    interaction = null
+function setMovementTarget(
+    targetX,
+    targetY,
+    onArrive = null
 ) {
-    if (!gameState.gameStarted) return;
-
-    const bounded = clampWorldPosition(
-        x,
-        y
-    );
-
-    gameState.player.targetX =
-        bounded.x;
-
-    gameState.player.targetY =
-        bounded.y;
-
-    gameState.player.moving = true;
-
-    gameState.activeInteraction =
-        interaction;
-
-    DOM.player?.classList.add("moving");
-}
-
-function updatePlayer(deltaTime) {
-    const player =
-        gameState.player;
-
-    if (!player.moving) return;
-
-    const dx =
-        player.targetX - player.x;
-
-    const dy =
-        player.targetY - player.y;
-
-    const distance =
-        Math.hypot(dx, dy);
-
-    if (
-        distance <=
-        Math.max(
-            3,
-            player.speed * deltaTime
-        )
-    ) {
-        player.x =
-            player.targetX;
-
-        player.y =
-            player.targetY;
-
-        player.moving = false;
-
-        DOM.player?.classList.remove(
-            "moving"
+    const clamped =
+        clampPlayerPosition(
+            targetX,
+            targetY
         );
 
-        handleMovementArrival();
+    gameState.targetX = clamped.x;
+    gameState.targetY = clamped.y;
+    gameState.moving = true;
+    gameState.onArrive = onArrive;
+}
+
+function stopMovement() {
+    gameState.targetX = null;
+    gameState.targetY = null;
+    gameState.moving = false;
+    gameState.onArrive = null;
+}
+
+function updatePlayerMovement(deltaTime) {
+    if (
+        !gameState.moving ||
+        gameState.targetX === null ||
+        gameState.targetY === null
+    ) {
+        return;
+    }
+
+    const deltaX =
+        gameState.targetX -
+        gameState.playerX;
+
+    const deltaY =
+        gameState.targetY -
+        gameState.playerY;
+
+    const distance =
+        Math.sqrt(
+            deltaX * deltaX +
+            deltaY * deltaY
+        );
+
+    if (
+        distance <= 2 ||
+        distance <=
+            PLAYER_SPEED * deltaTime
+    ) {
+        gameState.playerX =
+            gameState.targetX;
+
+        gameState.playerY =
+            gameState.targetY;
+
+        gameState.moving = false;
+
+        const callback =
+            gameState.onArrive;
+
+        gameState.targetX = null;
+        gameState.targetY = null;
+        gameState.onArrive = null;
+
+        renderPlayer();
+
+        if (typeof callback === "function") {
+            callback();
+        }
+
         return;
     }
 
     const directionX =
-        dx / distance;
+        deltaX / distance;
 
     const directionY =
-        dy / distance;
+        deltaY / distance;
 
-    player.x +=
+    gameState.playerX +=
         directionX *
-        player.speed *
+        PLAYER_SPEED *
         deltaTime;
 
-    player.y +=
+    gameState.playerY +=
         directionY *
-        player.speed *
+        PLAYER_SPEED *
         deltaTime;
+
+    const clamped =
+        clampPlayerPosition(
+            gameState.playerX,
+            gameState.playerY
+        );
+
+    gameState.playerX = clamped.x;
+    gameState.playerY = clamped.y;
+
+    renderPlayer();
+
+    updateCameraToPlayer();
 }
 
-function handleMovementArrival() {
-    const interaction =
-        gameState.activeInteraction;
+function clampPlayerPosition(x, y) {
+    const playerWidth =
+        DOM.player.offsetWidth || 86;
 
-    gameState.activeInteraction =
-        null;
+    const playerHeight =
+        DOM.player.offsetHeight || 110;
 
-    if (!interaction) return;
+    const minX = 10;
+    const minY = 10;
 
-    if (
-        interaction.interaction ===
-        "material"
-    ) {
-        const material =
-            gameState.materials.find(
-                item =>
-                    item.id ===
-                    interaction.materialId
-            );
+    const maxX =
+        WORLD_WIDTH -
+        playerWidth -
+        10;
 
-        if (material) {
-            handleMaterialInteraction(
-                material
-            );
-        }
-
-        return;
-    }
-
-    if (
-        interaction.interaction ===
-        "portal"
-    ) {
-        interactWithPortal();
-    }
-}
-
-function clampWorldPosition(x, y) {
-    const margin = 40;
+    const maxY =
+        WORLD_HEIGHT -
+        playerHeight -
+        10;
 
     return {
         x: Math.max(
-            margin,
-            Math.min(
-                WORLD_WIDTH - margin,
-                x
-            )
+            minX,
+            Math.min(maxX, x)
         ),
-
         y: Math.max(
-            margin,
-            Math.min(
-                WORLD_HEIGHT - margin,
-                y
-            )
+            minY,
+            Math.min(maxY, y)
         )
+    };
+}
+
+function renderPlayer() {
+    DOM.player.style.left =
+        `${gameState.playerX}px`;
+
+    DOM.player.style.top =
+        `${gameState.playerY}px`;
+}
+
+
+/* =========================================================
+   18. CAMERA SYSTEM
+========================================================= */
+
+function getViewportSize() {
+    const rect =
+        DOM.viewport.getBoundingClientRect();
+
+    return {
+        width: rect.width,
+        height: rect.height
+    };
+}
+
+function clampCamera(x, y) {
+    const viewport =
+        getViewportSize();
+
+    const maxX =
+        Math.max(
+            0,
+            WORLD_WIDTH -
+                viewport.width
+        );
+
+    const maxY =
+        Math.max(
+            0,
+            WORLD_HEIGHT -
+                viewport.height
+        );
+
+    return {
+        x: Math.max(
+            0,
+            Math.min(maxX, x)
+        ),
+        y: Math.max(
+            0,
+            Math.min(maxY, y)
+        )
+    };
+}
+
+function setCamera(x, y) {
+    const clamped =
+        clampCamera(x, y);
+
+    gameState.cameraX =
+        clamped.x;
+
+    gameState.cameraY =
+        clamped.y;
+
+    renderCamera();
+}
+
+function renderCamera() {
+    DOM.world.style.transform =
+        `translate(${-gameState.cameraX}px, ${-gameState.cameraY}px)`;
+}
+
+function centerCameraOnPlayer() {
+    const viewport =
+        getViewportSize();
+
+    const playerWidth =
+        DOM.player.offsetWidth || 86;
+
+    const playerHeight =
+        DOM.player.offsetHeight || 110;
+
+    const targetCameraX =
+        gameState.playerX +
+        playerWidth / 2 -
+        viewport.width / 2;
+
+    const targetCameraY =
+        gameState.playerY +
+        playerHeight / 2 -
+        viewport.height / 2;
+
+    setCamera(
+        targetCameraX,
+        targetCameraY
+    );
+}
+
+function updateCameraToPlayer() {
+    if (!gameState.gameStarted) {
+        return;
+    }
+
+    const viewport =
+        getViewportSize();
+
+    const playerWidth =
+        DOM.player.offsetWidth || 86;
+
+    const playerHeight =
+        DOM.player.offsetHeight || 110;
+
+    const playerCenterX =
+        gameState.playerX +
+        playerWidth / 2;
+
+    const playerCenterY =
+        gameState.playerY +
+        playerHeight / 2;
+
+    const marginX =
+        viewport.width * 0.28;
+
+    const marginY =
+        viewport.height * 0.28;
+
+    let newCameraX =
+        gameState.cameraX;
+
+    let newCameraY =
+        gameState.cameraY;
+
+    const screenPlayerX =
+        playerCenterX -
+        gameState.cameraX;
+
+    const screenPlayerY =
+        playerCenterY -
+        gameState.cameraY;
+
+    if (screenPlayerX < marginX) {
+        newCameraX =
+            playerCenterX -
+            marginX;
+    } else if (
+        screenPlayerX >
+        viewport.width - marginX
+    ) {
+        newCameraX =
+            playerCenterX -
+            (viewport.width - marginX);
+    }
+
+    if (screenPlayerY < marginY) {
+        newCameraY =
+            playerCenterY -
+            marginY;
+    } else if (
+        screenPlayerY >
+        viewport.height - marginY
+    ) {
+        newCameraY =
+            playerCenterY -
+            (viewport.height - marginY);
+    }
+
+    setCamera(
+        newCameraX,
+        newCameraY
+    );
+}
+
+function moveCameraBy(deltaX, deltaY) {
+    setCamera(
+        gameState.cameraX + deltaX,
+        gameState.cameraY + deltaY
+    );
+}
+
+
+/* =========================================================
+   19. CAMERA DRAG + POINTER MOVEMENT
+========================================================= */
+
+function initializePointerControls() {
+    DOM.viewport.addEventListener(
+        "pointerdown",
+        handleViewportPointerDown
+    );
+
+    DOM.viewport.addEventListener(
+        "pointermove",
+        handleViewportPointerMove
+    );
+
+    DOM.viewport.addEventListener(
+        "pointerup",
+        handleViewportPointerUp
+    );
+
+    DOM.viewport.addEventListener(
+        "pointercancel",
+        handleViewportPointerCancel
+    );
+
+    DOM.viewport.addEventListener(
+        "pointerleave",
+        handleViewportPointerCancel
+    );
+
+    DOM.viewport.addEventListener(
+        "contextmenu",
+        (event) => {
+            event.preventDefault();
+        }
+    );
+}
+
+function handleViewportPointerDown(event) {
+    if (!gameState.gameStarted) {
+        return;
+    }
+
+    if (event.button !== undefined && event.button !== 0) {
+        return;
+    }
+
+    gameState.pointer.active = true;
+    gameState.pointer.dragging = false;
+
+    gameState.pointer.startX =
+        event.clientX;
+
+    gameState.pointer.startY =
+        event.clientY;
+
+    gameState.pointer.lastX =
+        event.clientX;
+
+    gameState.pointer.lastY =
+        event.clientY;
+
+    gameState.pointer.totalMovement = 0;
+
+    gameState.cameraDragStartX =
+        gameState.cameraX;
+
+    gameState.cameraDragStartY =
+        gameState.cameraY;
+
+    try {
+        DOM.viewport.setPointerCapture(
+            event.pointerId
+        );
+    } catch {
+        /* Pointer capture is optional. */
+    }
+}
+
+function handleViewportPointerMove(event) {
+    if (
+        !gameState.pointer.active ||
+        !gameState.gameStarted
+    ) {
+        return;
+    }
+
+    const deltaX =
+        event.clientX -
+        gameState.pointer.lastX;
+
+    const deltaY =
+        event.clientY -
+        gameState.pointer.lastY;
+
+    const totalDeltaX =
+        event.clientX -
+        gameState.pointer.startX;
+
+    const totalDeltaY =
+        event.clientY -
+        gameState.pointer.startY;
+
+    gameState.pointer.totalMovement =
+        Math.sqrt(
+            totalDeltaX * totalDeltaX +
+            totalDeltaY * totalDeltaY
+        );
+
+    if (
+        gameState.pointer.totalMovement >= 8
+    ) {
+        gameState.pointer.dragging = true;
+    }
+
+    if (gameState.pointer.dragging) {
+        setCamera(
+            gameState.cameraX - deltaX,
+            gameState.cameraY - deltaY
+        );
+    }
+
+    gameState.pointer.lastX =
+        event.clientX;
+
+    gameState.pointer.lastY =
+        event.clientY;
+}
+
+function handleViewportPointerUp(event) {
+    if (!gameState.pointer.active) {
+        return;
+    }
+
+    const wasDragging =
+        gameState.pointer.dragging;
+
+    const startX =
+        gameState.pointer.startX;
+
+    const startY =
+        gameState.pointer.startY;
+
+    gameState.pointer.active = false;
+    gameState.pointer.dragging = false;
+
+    try {
+        DOM.viewport.releasePointerCapture(
+            event.pointerId
+        );
+    } catch {
+        /* Pointer capture may already be released. */
+    }
+
+    if (!wasDragging) {
+        handleMapClick(
+            event.clientX,
+            event.clientY
+        );
+    }
+}
+
+function handleViewportPointerCancel(event) {
+    if (!gameState.pointer.active) {
+        return;
+    }
+
+    gameState.pointer.active = false;
+    gameState.pointer.dragging = false;
+
+    try {
+        DOM.viewport.releasePointerCapture(
+            event.pointerId
+        );
+    } catch {
+        /* Pointer capture may already be released. */
+    }
+}
+
+function handleMapClick(clientX, clientY) {
+    const rect =
+        DOM.viewport.getBoundingClientRect();
+
+    const viewportX =
+        clientX - rect.left;
+
+    const viewportY =
+        clientY - rect.top;
+
+    const worldX =
+        viewportX +
+        gameState.cameraX;
+
+    const worldY =
+        viewportY +
+        gameState.cameraY;
+
+    const target =
+        clampPlayerPosition(
+            worldX,
+            worldY
+        );
+
+    setMovementTarget(
+        target.x,
+        target.y
+    );
+}
+
+
+/* =========================================================
+   20. ELEMENT WORLD POSITION
+========================================================= */
+
+function getElementWorldCenter(element) {
+    const left =
+        parseFloat(
+            element.style.left
+        ) || element.offsetLeft;
+
+    const top =
+        parseFloat(
+            element.style.top
+        ) || element.offsetTop;
+
+    return {
+        x:
+            left +
+            element.offsetWidth / 2,
+
+        y:
+            top +
+            element.offsetHeight / 2
     };
 }
 
 
 /* =========================================================
-   CAMERA
-   ========================================================= */
+   21. CAMERA BUTTONS
+========================================================= */
 
-function setupCameraControls() {
-    if (!DOM.gameViewport) return;
+function initializeCameraControls() {
+    if (!DOM.cameraControls) {
+        return;
+    }
 
-    DOM.gameViewport.addEventListener(
-        "pointerdown",
-        handleCameraPointerDown
-    );
+    const controls =
+        DOM.cameraControls.querySelectorAll(
+            "[data-camera-direction]"
+        );
 
-    DOM.gameViewport.addEventListener(
-        "pointermove",
-        handleCameraPointerMove
-    );
-
-    DOM.gameViewport.addEventListener(
-        "pointerup",
-        handleCameraPointerUp
-    );
-
-    DOM.gameViewport.addEventListener(
-        "pointercancel",
-        handleCameraPointerUp
-    );
-
-    DOM.gameViewport.addEventListener(
-        "wheel",
-        event => {
-            if (!gameState.gameStarted) return;
-
-            event.preventDefault();
-
-            gameState.camera.userControlled =
-                true;
-
-            gameState.camera.targetX +=
-                event.deltaX;
-
-            gameState.camera.targetY +=
-                event.deltaY;
-
-            clampCameraTarget();
-        },
-        { passive: false }
-    );
-
-    window.addEventListener(
-        "keydown",
-        handleKeyboardCamera
-    );
-
-    DOM.cameraButtons.forEach(button => {
+    controls.forEach((button) => {
         button.addEventListener(
             "click",
-            event => {
-                event.preventDefault();
-
+            () => {
                 const direction =
-                    button.dataset.camera;
+                    button.dataset.cameraDirection;
 
-                moveCameraByDirection(
-                    direction
-                );
+                const viewport =
+                    getViewportSize();
+
+                const stepX =
+                    Math.max(
+                        80,
+                        viewport.width * 0.35
+                    );
+
+                const stepY =
+                    Math.max(
+                        80,
+                        viewport.height * 0.35
+                    );
+
+                switch (direction) {
+                    case "up":
+                        moveCameraBy(
+                            0,
+                            -stepY
+                        );
+                        break;
+
+                    case "down":
+                        moveCameraBy(
+                            0,
+                            stepY
+                        );
+                        break;
+
+                    case "left":
+                        moveCameraBy(
+                            -stepX,
+                            0
+                        );
+                        break;
+
+                    case "right":
+                        moveCameraBy(
+                            stepX,
+                            0
+                        );
+                        break;
+
+                    case "center":
+                        centerCameraOnPlayer();
+                        break;
+
+                    default:
+                        break;
+                }
             }
         );
     });
 }
 
-function handleCameraPointerDown(event) {
-    if (!gameState.gameStarted) return;
-
-    if (
-        event.target.closest(
-            "button, input, label, a, textarea, select, " +
-            ".modal, .material-modal, .portal-modal"
-        )
-    ) {
-        return;
-    }
-
-    gameState.input.pointerDown = true;
-    gameState.input.draggingCamera = false;
-
-    gameState.input.dragStartX =
-        event.clientX;
-
-    gameState.input.dragStartY =
-        event.clientY;
-
-    gameState.input.lastPointerX =
-        event.clientX;
-
-    gameState.input.lastPointerY =
-        event.clientY;
-
-    gameState.input.cameraStartX =
-        gameState.camera.targetX;
-
-    gameState.input.cameraStartY =
-        gameState.camera.targetY;
-
-    gameState.input.movedDistance = 0;
-
-    DOM.gameViewport.setPointerCapture?.(
-        event.pointerId
-    );
-}
-
-function handleCameraPointerMove(event) {
-    if (
-        !gameState.input.pointerDown
-    ) {
-        return;
-    }
-
-    const dx =
-        event.clientX -
-        gameState.input.lastPointerX;
-
-    const dy =
-        event.clientY -
-        gameState.input.lastPointerY;
-
-    const totalDX =
-        event.clientX -
-        gameState.input.dragStartX;
-
-    const totalDY =
-        event.clientY -
-        gameState.input.dragStartY;
-
-    gameState.input.movedDistance =
-        Math.hypot(
-            totalDX,
-            totalDY
-        );
-
-    if (
-        gameState.input.movedDistance >
-        8
-    ) {
-        gameState.input.draggingCamera =
-            true;
-    }
-
-    if (
-        gameState.input.draggingCamera
-    ) {
-        gameState.camera.userControlled =
-            true;
-
-        gameState.camera.targetX -= dx;
-        gameState.camera.targetY -= dy;
-
-        clampCameraTarget();
-
-        DOM.gameViewport.classList.add(
-            "camera-dragging"
-        );
-
-        event.preventDefault();
-    }
-
-    gameState.input.lastPointerX =
-        event.clientX;
-
-    gameState.input.lastPointerY =
-        event.clientY;
-}
-
-function handleCameraPointerUp(event) {
-    if (
-        !gameState.input.pointerDown
-    ) {
-        return;
-    }
-
-    gameState.input.pointerDown = false;
-
-    DOM.gameViewport?.classList.remove(
-        "camera-dragging"
-    );
-
-    DOM.gameViewport?.releasePointerCapture?.(
-        event.pointerId
-    );
-
-    /*
-     * A simple click should move the player.
-     * A drag should only move the camera.
-     */
-    if (
-        !gameState.input.draggingCamera &&
-        gameState.input.movedDistance <= 8
-    ) {
-        handleWorldClick(event);
-    }
-
-    /*
-     * Keep the drag state briefly available for
-     * the event cycle so UI/material clicks are
-     * not confused with camera movement.
-     */
-    window.setTimeout(() => {
-        gameState.input.draggingCamera =
-            false;
-    }, 0);
-}
-
-function handleWorldClick(event) {
-    if (!DOM.gameViewport) return;
-
-    if (
-        event.target.closest(
-            "button, input, label, a, textarea, select, " +
-            ".material-point, .quizizz-portal, " +
-            ".modal, .material-modal, .portal-modal"
-        )
-    ) {
-        return;
-    }
-
-    const rect =
-        DOM.gameViewport.getBoundingClientRect();
-
-    const viewportX =
-        event.clientX -
-        rect.left;
-
-    const viewportY =
-        event.clientY -
-        rect.top;
-
-    const worldX =
-        viewportX -
-        gameState.camera.x;
-
-    const worldY =
-        viewportY -
-        gameState.camera.y;
-
-    movePlayerTo(
-        worldX,
-        worldY
-    );
-}
-
-function handleKeyboardCamera(event) {
-    if (!gameState.gameStarted) return;
-
-    const key =
-        event.key.toLowerCase();
-
-    const keys = [
-        "arrowup",
-        "arrowdown",
-        "arrowleft",
-        "arrowright",
-        "w",
-        "a",
-        "s",
-        "d"
-    ];
-
-    if (!keys.includes(key)) return;
-
-    const movement = 60;
-
-    if (
-        key === "arrowup" ||
-        key === "w"
-    ) {
-        gameState.camera.targetY -=
-            movement;
-    }
-
-    if (
-        key === "arrowdown" ||
-        key === "s"
-    ) {
-        gameState.camera.targetY +=
-            movement;
-    }
-
-    if (
-        key === "arrowleft" ||
-        key === "a"
-    ) {
-        gameState.camera.targetX -=
-            movement;
-    }
-
-    if (
-        key === "arrowright" ||
-        key === "d"
-    ) {
-        gameState.camera.targetX +=
-            movement;
-    }
-
-    gameState.camera.userControlled =
-        true;
-
-    clampCameraTarget();
-}
-
-function moveCameraByDirection(
-    direction
-) {
-    const amount = 180;
-
-    switch (direction) {
-        case "up":
-            gameState.camera.targetY -=
-                amount;
-            break;
-
-        case "down":
-            gameState.camera.targetY +=
-                amount;
-            break;
-
-        case "left":
-            gameState.camera.targetX -=
-                amount;
-            break;
-
-        case "right":
-            gameState.camera.targetX +=
-                amount;
-            break;
-
-        case "center":
-            gameState.camera.userControlled =
-                false;
-
-            centerCameraOnPlayer(false);
-            return;
-
-        default:
-            return;
-    }
-
-    gameState.camera.userControlled =
-        true;
-
-    clampCameraTarget();
-}
-
-function updateCamera() {
-    if (!DOM.gameViewport) return;
-
-    /*
-     * Automatically follow the player while moving
-     * unless the user has deliberately moved the camera.
-     */
-    if (
-        gameState.player.moving &&
-        !gameState.camera.userControlled
-    ) {
-        const viewportWidth =
-            DOM.gameViewport.clientWidth;
-
-        const viewportHeight =
-            DOM.gameViewport.clientHeight;
-
-        gameState.camera.targetX =
-            viewportWidth / 2 -
-            gameState.player.x;
-
-        gameState.camera.targetY =
-            viewportHeight / 2 -
-            gameState.player.y;
-
-        clampCameraTarget();
-    }
-
-    gameState.camera.x +=
-        (
-            gameState.camera.targetX -
-            gameState.camera.x
-        ) *
-        CAMERA_SMOOTHING;
-
-    gameState.camera.y +=
-        (
-            gameState.camera.targetY -
-            gameState.camera.y
-        ) *
-        CAMERA_SMOOTHING;
-
-    clampCameraCurrent();
-}
-
-function centerCameraOnPlayer(
-    immediate = false
-) {
-    if (!DOM.gameViewport) return;
-
-    const viewportWidth =
-        DOM.gameViewport.clientWidth;
-
-    const viewportHeight =
-        DOM.gameViewport.clientHeight;
-
-    gameState.camera.targetX =
-        viewportWidth / 2 -
-        gameState.player.x;
-
-    gameState.camera.targetY =
-        viewportHeight / 2 -
-        gameState.player.y;
-
-    clampCameraTarget();
-
-    if (immediate) {
-        gameState.camera.x =
-            gameState.camera.targetX;
-
-        gameState.camera.y =
-            gameState.camera.targetY;
-    }
-}
-
-function clampCameraTarget() {
-    if (!DOM.gameViewport) return;
-
-    const viewportWidth =
-        DOM.gameViewport.clientWidth;
-
-    const viewportHeight =
-        DOM.gameViewport.clientHeight;
-
-    const minX =
-        Math.min(
-            0,
-            viewportWidth -
-            WORLD_WIDTH
-        );
-
-    const maxX = 0;
-
-    const minY =
-        Math.min(
-            0,
-            viewportHeight -
-            WORLD_HEIGHT
-        );
-
-    const maxY = 0;
-
-    gameState.camera.targetX =
-        Math.max(
-            minX,
-            Math.min(
-                maxX,
-                gameState.camera.targetX
-            )
-        );
-
-    gameState.camera.targetY =
-        Math.max(
-            minY,
-            Math.min(
-                maxY,
-                gameState.camera.targetY
-            )
-        );
-}
-
-function clampCameraCurrent() {
-    if (!DOM.gameViewport) return;
-
-    const viewportWidth =
-        DOM.gameViewport.clientWidth;
-
-    const viewportHeight =
-        DOM.gameViewport.clientHeight;
-
-    const minX =
-        Math.min(
-            0,
-            viewportWidth -
-            WORLD_WIDTH
-        );
-
-    const maxX = 0;
-
-    const minY =
-        Math.min(
-            0,
-            viewportHeight -
-            WORLD_HEIGHT
-        );
-
-    const maxY = 0;
-
-    gameState.camera.x =
-        Math.max(
-            minX,
-            Math.min(
-                maxX,
-                gameState.camera.x
-            )
-        );
-
-    gameState.camera.y =
-        Math.max(
-            minY,
-            Math.min(
-                maxY,
-                gameState.camera.y
-            )
-        );
-}
-
 
 /* =========================================================
-   MATERIAL SYSTEM
-   ========================================================= */
+   22. NOTIFICATIONS
+========================================================= */
 
-function handleMaterialInteraction(
-    material
+function showNotification(
+    title,
+    message,
+    duration = 3500
 ) {
-    if (!material) return;
-
-    if (material.completed) {
-        openMaterial(material.id);
+    if (!DOM.notification) {
         return;
     }
 
-    if (material.status === "locked") {
-        showNotification(
-            "Materi ini belum terbuka. Selesaikan materi sebelumnya terlebih dahulu."
-        );
-        return;
-    }
-
-    showInteractionPrompt(
-        `Materi ${material.id}: ${material.title}`
-    );
-
-    openMaterial(material.id);
-}
-
-function openMaterial(materialId) {
-    const material =
-        gameState.materials.find(
-            item => item.id === materialId
-        );
-
-    if (!material) return;
-
-    if (
-        material.status === "locked" &&
-        !material.completed
-    ) {
-        showNotification(
-            "Materi ini masih terkunci."
-        );
-        return;
-    }
-
-    gameState.currentMaterial =
-        material.id;
-
-    if (DOM.materialTitle) {
-        DOM.materialTitle.textContent =
-            material.title;
-    }
-
-    if (DOM.materialNumber) {
-        DOM.materialNumber.textContent =
-            `Materi ${material.id}`;
-    }
-
-    if (DOM.materialSummary) {
-        DOM.materialSummary.textContent =
-            material.summary;
-    }
-
-    if (DOM.materialPointsContent) {
-        DOM.materialPointsContent.innerHTML =
-            "";
-
-        material.points.forEach(
-            point => {
-                const li =
-                    document.createElement("li");
-
-                li.textContent = point;
-
-                DOM.materialPointsContent.appendChild(
-                    li
-                );
-            }
+    if (gameState.notificationTimer) {
+        clearTimeout(
+            gameState.notificationTimer
         );
     }
 
-    updateMaterialModalState(
-        material
-    );
+    DOM.notificationTitle.textContent =
+        title;
 
-    if (DOM.materialModal) {
-        DOM.materialModal.classList.remove(
-            "hidden",
-            "is-hidden"
-        );
-
-        DOM.materialModal.classList.add(
-            "active",
-            "open"
-        );
-
-        DOM.materialModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-    }
-
-    hideInteractionPrompt();
-
-    DOM.materialCompleteButton?.focus();
-}
-
-function updateMaterialModalState(
-    material
-) {
-    if (!DOM.materialCompleteButton) return;
-
-    if (material.completed) {
-        DOM.materialCompleteButton.textContent =
-            "Materi Sudah Selesai";
-
-        DOM.materialCompleteButton.disabled =
-            true;
-
-        DOM.materialCompleteButton.classList.add(
-            "completed"
-        );
-
-        return;
-    }
-
-    DOM.materialCompleteButton.textContent =
-        "Selesai";
-
-    DOM.materialCompleteButton.disabled =
-        false;
-
-    DOM.materialCompleteButton.classList.remove(
-        "completed"
-    );
-}
-
-function completeMaterial() {
-    const materialId =
-        gameState.currentMaterial;
-
-    if (!materialId) return;
-
-    const material =
-        gameState.materials.find(
-            item => item.id === materialId
-        );
-
-    if (!material) return;
-
-    if (material.completed) {
-        closeMaterialModal();
-        return;
-    }
-
-    if (material.status === "locked") {
-        showNotification(
-            "Materi ini belum dapat diselesaikan."
-        );
-        return;
-    }
-
-    material.completed = true;
-    material.status = "completed";
-
-    const nextMaterial =
-        gameState.materials.find(
-            item =>
-                item.id === material.id + 1
-        );
-
-    if (
-        nextMaterial &&
-        !nextMaterial.completed
-    ) {
-        nextMaterial.status =
-            "available";
-    }
-
-    updateProgress();
-    updateMaterialVisuals();
-
-    saveGame();
-
-    closeMaterialModal();
-
-    showNotification(
-        `Materi ${material.id} selesai dipelajari!`
-    );
-
-    checkPortalUnlock();
-}
-
-function closeMaterialModal() {
-    if (!DOM.materialModal) return;
-
-    DOM.materialModal.classList.remove(
-        "active",
-        "open"
-    );
-
-    DOM.materialModal.classList.add(
-        "hidden"
-    );
-
-    DOM.materialModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-    gameState.currentMaterial =
-        null;
-}
-
-function setupMaterialModal() {
-    if (DOM.materialCompleteButton) {
-        DOM.materialCompleteButton.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                completeMaterial();
-            }
-        );
-    }
-
-    if (DOM.materialCloseButton) {
-        DOM.materialCloseButton.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                closeMaterialModal();
-            }
-        );
-    }
-
-    if (DOM.materialReadButton) {
-        DOM.materialReadButton.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-
-                const material =
-                    gameState.materials.find(
-                        item =>
-                            item.id ===
-                            gameState.currentMaterial
-                    );
-
-                if (material) {
-                    updateMaterialModalState(
-                        material
-                    );
-
-                    DOM.materialSummary?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-                }
-            }
-        );
-    }
-
-    DOM.materialModal?.addEventListener(
-        "click",
-        event => {
-            if (
-                event.target ===
-                DOM.materialModal
-            ) {
-                closeMaterialModal();
-            }
-        }
-    );
-}
-
-function updateProgress() {
-    const completedCount =
-        gameState.materials.filter(
-            material =>
-                material.completed
-        ).length;
-
-    DOM.progressElements.forEach(
-        element => {
-            if (
-                element.matches(
-                    "input, progress"
-                )
-            ) {
-                if (
-                    element.tagName ===
-                    "PROGRESS"
-                ) {
-                    element.value =
-                        completedCount;
-                    element.max = 6;
-                }
-
-                return;
-            }
-
-            element.textContent =
-                `${completedCount}/6`;
-        }
-    );
-
-    document
-        .querySelectorAll(
-            "[data-progress-count]"
-        )
-        .forEach(element => {
-            element.textContent =
-                completedCount;
-        });
-
-    document
-        .querySelectorAll(
-            "[data-progress-total]"
-        )
-        .forEach(element => {
-            element.textContent =
-                "6";
-        });
-}
-
-function updateMaterialVisuals() {
-    DOM.materialPoints.forEach(
-        (element, index) => {
-            const materialId =
-                Number(
-                    element.dataset.materialId
-                ) ||
-                index + 1;
-
-            const material =
-                gameState.materials.find(
-                    item =>
-                        item.id ===
-                        materialId
-                );
-
-            if (!material) return;
-
-            element.classList.remove(
-                "locked",
-                "available",
-                "completed"
-            );
-
-            element.dataset.status =
-                material.status;
-
-            element.classList.add(
-                material.status
-            );
-
-            element.setAttribute(
-                "aria-disabled",
-                material.status ===
-                    "locked"
-                    ? "true"
-                    : "false"
-            );
-
-            const statusElement =
-                element.querySelector(
-                    "[data-material-status], " +
-                    ".material-status"
-                );
-
-            if (statusElement) {
-                if (
-                    material.status ===
-                    "completed"
-                ) {
-                    statusElement.textContent =
-                        "✓ Selesai";
-                } else if (
-                    material.status ===
-                    "available"
-                ) {
-                    statusElement.textContent =
-                        "Tersedia";
-                } else {
-                    statusElement.textContent =
-                        "Terkunci";
-                }
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   PORTAL SYSTEM
-   ========================================================= */
-
-function setupPortal() {
-    if (!DOM.portal) return;
-
-    DOM.portal.style.left =
-        `${gameState.portal.x}px`;
-
-    DOM.portal.style.top =
-        `${gameState.portal.y}px`;
-
-    DOM.portal.addEventListener(
-        "click",
-        event => {
-            event.stopPropagation();
-
-            if (
-                gameState.input.draggingCamera
-            ) {
-                return;
-            }
-
-            const distance =
-                getDistance(
-                    gameState.player.x,
-                    gameState.player.y,
-                    gameState.portal.x,
-                    gameState.portal.y
-                );
-
-            if (
-                distance >
-                PORTAL_INTERACTION_DISTANCE
-            ) {
-                movePlayerTo(
-                    gameState.portal.x,
-                    gameState.portal.y,
-                    {
-                        interaction:
-                            "portal"
-                    }
-                );
-
-                return;
-            }
-
-            interactWithPortal();
-        }
-    );
-}
-
-function checkPortalUnlock() {
-    const completedCount =
-        gameState.materials.filter(
-            material =>
-                material.completed
-        ).length;
-
-    if (
-        completedCount === 6 &&
-        !gameState.portal.unlocked
-    ) {
-        gameState.portal.unlocked =
-            true;
-
-        updatePortalVisual();
-
-        saveGame();
-
-        showNotification(
-            "Semua materi telah selesai dipelajari. Portal Quizizz telah terbuka!"
-        );
-    }
-}
-
-function updatePortalVisual() {
-    if (!DOM.portal) return;
-
-    DOM.portal.classList.toggle(
-        "unlocked",
-        gameState.portal.unlocked
-    );
-
-    DOM.portal.classList.toggle(
-        "locked",
-        !gameState.portal.unlocked
-    );
-
-    DOM.portal.dataset.status =
-        gameState.portal.unlocked
-            ? "unlocked"
-            : "locked";
-
-    const statusElement =
-        DOM.portal.querySelector(
-            "[data-portal-status], .portal-status"
-        );
-
-    if (statusElement) {
-        statusElement.textContent =
-            gameState.portal.unlocked
-                ? "TERBUKA"
-                : "TERKUNCI";
-    }
-}
-
-function interactWithPortal() {
-    if (!gameState.portal.unlocked) {
-        showNotification(
-            "Portal Quizizz masih terkunci. Selesaikan seluruh 6 materi terlebih dahulu."
-        );
-        return;
-    }
-
-    if (
-        QUIZIZZ_URL ===
-        "ISI_LINK_QUIZIZZ_DI_SINI" ||
-        !/^https?:\/\//i.test(
-            QUIZIZZ_URL
-        )
-    ) {
-        showNotification(
-            "URL Quizizz belum diisi oleh developer."
-        );
-        return;
-    }
-
-    openPortalModal();
-}
-
-function setupPortalModal() {
-    if (DOM.quizizzButton) {
-        DOM.quizizzButton.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-
-                if (
-                    QUIZIZZ_URL ===
-                    "ISI_LINK_QUIZIZZ_DI_SINI" ||
-                    !/^https?:\/\//i.test(
-                        QUIZIZZ_URL
-                    )
-                ) {
-                    showNotification(
-                        "URL Quizizz belum diisi oleh developer."
-                    );
-                    return;
-                }
-
-                window.open(
-                    QUIZIZZ_URL,
-                    "_blank",
-                    "noopener,noreferrer"
-                );
-            }
-        );
-    }
-
-    if (DOM.closePortalButton) {
-        DOM.closePortalButton.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                closePortalModal();
-            }
-        );
-    }
-
-    DOM.portalModal?.addEventListener(
-        "click",
-        event => {
-            if (
-                event.target ===
-                DOM.portalModal
-            ) {
-                closePortalModal();
-            }
-        }
-    );
-}
-
-function openPortalModal() {
-    if (!DOM.portalModal) {
-        /*
-         * If the HTML does not contain a portal modal,
-         * the interaction remains non-blocking and the
-         * configured URL can still be opened.
-         */
-        if (
-            QUIZIZZ_URL !==
-                "ISI_LINK_QUIZIZZ_DI_SINI" &&
-            /^https?:\/\//i.test(
-                QUIZIZZ_URL
-            )
-        ) {
-            window.open(
-                QUIZIZZ_URL,
-                "_blank",
-                "noopener,noreferrer"
-            );
-        }
-
-        return;
-    }
-
-    DOM.portalModal.classList.remove(
-        "hidden",
-        "is-hidden"
-    );
-
-    DOM.portalModal.classList.add(
-        "active",
-        "open"
-    );
-
-    DOM.portalModal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-    DOM.quizizzButton?.focus();
-}
-
-function closePortalModal() {
-    if (!DOM.portalModal) return;
-
-    DOM.portalModal.classList.remove(
-        "active",
-        "open"
-    );
-
-    DOM.portalModal.classList.add(
-        "hidden"
-    );
-
-    DOM.portalModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-}
-
-
-/* =========================================================
-   INTERACTION PROMPT
-   ========================================================= */
-
-function updateInteractionPrompt() {
-    if (!gameState.gameStarted) {
-        hideInteractionPrompt();
-        return;
-    }
-
-    const player =
-        gameState.player;
-
-    let nearestMaterial = null;
-    let nearestDistance = Infinity;
-
-    gameState.materials.forEach(
-        material => {
-            if (
-                material.status ===
-                    "locked" &&
-                !material.completed
-            ) {
-                return;
-            }
-
-            const distance =
-                getDistance(
-                    player.x,
-                    player.y,
-                    material.x,
-                    material.y
-                );
-
-            if (
-                distance <
-                    MATERIAL_INTERACTION_DISTANCE &&
-                distance <
-                    nearestDistance
-            ) {
-                nearestDistance =
-                    distance;
-
-                nearestMaterial =
-                    material;
-            }
-        }
-    );
-
-    if (nearestMaterial) {
-        showInteractionPrompt(
-            nearestMaterial.completed
-                ? `Materi ${nearestMaterial.id} · Buka kembali`
-                : `Materi ${nearestMaterial.id} · Baca Materi`
-        );
-        return;
-    }
-
-    const portalDistance =
-        getDistance(
-            player.x,
-            player.y,
-            gameState.portal.x,
-            gameState.portal.y
-        );
-
-    if (
-        portalDistance <=
-        PORTAL_INTERACTION_DISTANCE
-    ) {
-        showInteractionPrompt(
-            gameState.portal.unlocked
-                ? "PORTAL QUIZIZZ · Masuk"
-                : "PORTAL QUIZIZZ · Terkunci"
-        );
-        return;
-    }
-
-    hideInteractionPrompt();
-}
-
-function showInteractionPrompt(message) {
-    if (!DOM.interactionPrompt) return;
-
-    DOM.interactionPrompt.textContent =
+    DOM.notificationMessage.textContent =
         message;
 
-    DOM.interactionPrompt.classList.remove(
-        "hidden"
-    );
+    DOM.notification.hidden = false;
 
-    DOM.interactionPrompt.classList.add(
-        "visible",
-        "active"
-    );
+    gameState.notificationTimer =
+        window.setTimeout(
+            () => {
+                hideNotification();
+            },
+            duration
+        );
 }
 
-function hideInteractionPrompt() {
-    if (!DOM.interactionPrompt) return;
-
-    DOM.interactionPrompt.classList.remove(
-        "visible",
-        "active"
-    );
-
-    DOM.interactionPrompt.classList.add(
-        "hidden"
-    );
-}
-
-
-/* =========================================================
-   PLAYER DOM
-   ========================================================= */
-
-function updatePlayerDOM() {
-    if (!DOM.player) return;
-
-    DOM.player.style.left =
-        `${gameState.player.x}px`;
-
-    DOM.player.style.top =
-        `${gameState.player.y}px`;
-
-    DOM.playerNameTag &&
-        (DOM.playerNameTag.textContent =
-            gameState.player.name ||
-            "Pemain");
-
-    if (DOM.playerAvatarImage) {
-        if (
-            DOM.playerAvatarImage.src !==
-            new URL(
-                gameState.player.avatar,
-                window.location.href
-            ).href
-        ) {
-            DOM.playerAvatarImage.src =
-                gameState.player.avatar;
-        }
-
-        DOM.playerAvatarImage.alt =
-            `Avatar ${gameState.player.name || "Pemain"}`;
+function hideNotification() {
+    if (!DOM.notification) {
+        return;
     }
 
-    DOM.player.classList.toggle(
-        "moving",
-        gameState.player.moving
+    DOM.notification.hidden = true;
+
+    if (gameState.notificationTimer) {
+        clearTimeout(
+            gameState.notificationTimer
+        );
+
+        gameState.notificationTimer = null;
+    }
+}
+
+
+/* =========================================================
+   23. INSTRUCTION MODAL
+========================================================= */
+
+function showInstructionOnce() {
+    let shouldShow = true;
+
+    try {
+        shouldShow =
+            localStorage.getItem(
+                "pancasilaGame_instructionSeen"
+            ) !== "true";
+    } catch {
+        shouldShow = true;
+    }
+
+    if (!shouldShow) {
+        return;
+    }
+
+    DOM.instructionModal.hidden = false;
+}
+
+function closeInstructionModal() {
+    DOM.instructionModal.hidden = true;
+
+    try {
+        localStorage.setItem(
+            "pancasilaGame_instructionSeen",
+            "true"
+        );
+    } catch {
+        /* Persistence is optional. */
+    }
+
+    if (DOM.startScreen.hidden) {
+        document.body.style.overflow = "";
+    }
+}
+
+
+/* =========================================================
+   24. MENU
+========================================================= */
+
+function openMenuConfirmation() {
+    if (!gameState.gameStarted) {
+        return;
+    }
+
+    DOM.menuConfirmationModal.hidden = false;
+}
+
+function closeMenuConfirmation() {
+    DOM.menuConfirmationModal.hidden = true;
+}
+
+function returnToMenu() {
+    closeMenuConfirmation();
+    closeMaterialModal();
+
+    gameState.gameStarted = false;
+    gameState.targetX = null;
+    gameState.targetY = null;
+    gameState.moving = false;
+    gameState.activeMaterial = null;
+
+    DOM.gameScreen.hidden = true;
+    DOM.startScreen.hidden = false;
+
+    document.body.style.overflow = "";
+
+    updateProgress();
+    updatePortalVisual();
+}
+
+
+/* =========================================================
+   25. GENERIC MODAL CLOSE
+========================================================= */
+
+function handleModalOverlayClick(event) {
+    const modalType =
+        event.currentTarget.dataset.modalClose;
+
+    if (modalType === "material") {
+        closeMaterialModal();
+    }
+
+    if (modalType === "instruction") {
+        closeInstructionModal();
+    }
+
+    if (modalType === "menu-confirmation") {
+        closeMenuConfirmation();
+    }
+}
+
+
+/* =========================================================
+   26. RESIZE
+========================================================= */
+
+function handleResize() {
+    if (!gameState.gameStarted) {
+        return;
+    }
+
+    setCamera(
+        gameState.cameraX,
+        gameState.cameraY
     );
 }
 
 
 /* =========================================================
-   WORLD / PLAYER DISTANCE
-   ========================================================= */
+   27. UTILITY FUNCTIONS
+========================================================= */
 
-function getDistance(
+function distanceBetween(
     x1,
     y1,
     x2,
     y2
 ) {
-    return Math.hypot(
-        x2 - x1,
-        y2 - y1
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
     );
 }
 
 
 /* =========================================================
-   UI BUTTONS
-   ========================================================= */
+   28. KEYBOARD ACCESS
+========================================================= */
 
-function setupUIButtons() {
-    DOM.materialMenuButtons.forEach(
-        button => {
-            button.addEventListener(
-                "click",
-                event => {
-                    event.preventDefault();
-
-                    showMaterialsOverview();
-                }
-            );
-        }
-    );
-
-    DOM.helpButtons.forEach(
-        button => {
-            button.addEventListener(
-                "click",
-                event => {
-                    event.preventDefault();
-
-                    showNotification(
-                        "Klik area map untuk bergerak. Geser map untuk melihat area lain. Datangi titik materi dan selesaikan keenam materi untuk membuka Portal Quizizz."
-                    );
-                }
-            );
-        }
-    );
-
-    DOM.resetButtons.forEach(
-        button => {
-            button.addEventListener(
-                "click",
-                event => {
-                    event.preventDefault();
-
-                    const confirmed =
-                        window.confirm(
-                            "Mulai dari awal akan menghapus progress pembelajaran. Lanjutkan?"
-                        );
-
-                    if (confirmed) {
-                        resetGame();
-                    }
-                }
-            );
-        }
-    );
-}
-
-function showMaterialsOverview() {
-    const completed =
-        gameState.materials.filter(
-            item =>
-                item.completed
-        ).length;
-
-    const current =
-        gameState.materials.find(
-            item =>
-                item.status ===
-                "available"
-        );
-
-    if (current) {
-        showNotification(
-            `Progress ${completed}/6. Materi berikutnya: Materi ${current.id} — ${current.title}`
-        );
-    } else if (completed === 6) {
-        showNotification(
-            "Progress 6/6. Semua materi telah selesai dipelajari."
-        );
-    } else {
-        showNotification(
-            `Progress ${completed}/6. Jelajahi titik materi yang tersedia.`
-        );
-    }
-}
-
-
-/* =========================================================
-   NOTIFICATION
-   ========================================================= */
-
-function showNotification(message) {
-    if (!DOM.notification) {
-        /*
-         * The game remains functional even if the optional
-         * notification element is missing.
-         */
-        return;
-    }
-
-    window.clearTimeout(
-        gameState.notificationTimer
-    );
-
-    DOM.notification.textContent =
-        message;
-
-    DOM.notification.classList.remove(
-        "hidden"
-    );
-
-    DOM.notification.classList.add(
-        "visible",
-        "active"
-    );
-
-    DOM.notification.setAttribute(
-        "role",
-        "status"
-    );
-
-    gameState.notificationTimer =
-        window.setTimeout(() => {
-            DOM.notification.classList.remove(
-                "visible",
-                "active"
-            );
-
-            DOM.notification.classList.add(
-                "hidden"
-            );
-        }, 4200);
-}
-
-
-/* =========================================================
-   SAVE / LOAD
-   ========================================================= */
-
-function saveGame() {
-    try {
-        const completedMaterials =
-            gameState.materials
-                .filter(
-                    material =>
-                        material.completed
-                )
-                .map(
-                    material =>
-                        material.id
-                );
-
-        const saveData = {
-            player: {
-                name:
-                    gameState.player.name,
-
-                characterId:
-                    gameState.player.characterId,
-
-                avatar:
-                    gameState.player.customAvatar
-                        ? null
-                        : gameState.player.avatar,
-
-                customAvatar:
-                    gameState.player.customAvatar,
-
-                x:
-                    gameState.player.x,
-
-                y:
-                    gameState.player.y
-            },
-
-            materials:
-                completedMaterials,
-
-            portalUnlocked:
-                gameState.portal.unlocked,
-
-            gameStarted:
-                gameState.gameStarted
-        };
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(
-                saveData
-            )
-        );
-    } catch (error) {
-        /*
-         * localStorage may be disabled, full, or blocked.
-         * The game should continue in memory.
-         */
-        console.warn(
-            "Game progress tidak dapat disimpan.",
-            error
-        );
-    }
-}
-
-function loadGame() {
-    try {
-        const raw =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-        if (!raw) {
-            setInitialMaterialStates();
-            return;
-        }
-
-        const saved =
-            JSON.parse(raw);
-
-        if (
-            !saved ||
-            typeof saved !==
-                "object"
-        ) {
-            setInitialMaterialStates();
-            return;
-        }
-
-        const savedPlayer =
-            saved.player || {};
-
-        gameState.player.name =
-            typeof savedPlayer.name ===
-                "string"
-                ? savedPlayer.name
-                : "";
-
-        gameState.player.x =
-            Number.isFinite(
-                savedPlayer.x
-            )
-                ? savedPlayer.x
-                : 360;
-
-        gameState.player.y =
-            Number.isFinite(
-                savedPlayer.y
-            )
-                ? savedPlayer.y
-                : 360;
-
-        gameState.player.targetX =
-            gameState.player.x;
-
-        gameState.player.targetY =
-            gameState.player.y;
-
-        if (
-            savedPlayer.customAvatar &&
-            !savedPlayer.avatar
-        ) {
-            /*
-             * Blob/object URLs cannot survive a page refresh.
-             * Fall back to the selected built-in character.
-             */
-            gameState.player.customAvatar =
-                false;
-
-            gameState.player.characterId =
-                "karakter1";
-
-            gameState.player.avatar =
-                CHARACTER_ASSETS.karakter1;
-        } else {
-            const characterId =
-                CHARACTER_ASSETS[
-                    savedPlayer.characterId
-                ]
-                    ? savedPlayer.characterId
-                    : "karakter1";
-
-            gameState.player.characterId =
-                characterId;
-
-            gameState.player.avatar =
-                CHARACTER_ASSETS[
-                    characterId
-                ];
-
-            gameState.player.customAvatar =
-                false;
-        }
-
-        const completed =
-            Array.isArray(
-                saved.materials
-            )
-                ? saved.materials
-                : [];
-
-        gameState.materials.forEach(
-            material => {
-                material.completed =
-                    completed.includes(
-                        material.id
-                    );
+function initializeKeyboardControls() {
+    document.addEventListener(
+        "keydown",
+        (event) => {
+            if (!gameState.gameStarted) {
+                return;
             }
-        );
 
-        recalculateMaterialStatuses();
-
-        gameState.portal.unlocked =
-            gameState.materials.every(
-                material =>
-                    material.completed
-            );
-
-        if (
-            typeof saved.portalUnlocked ===
-                "boolean" &&
-            saved.portalUnlocked
-        ) {
-            gameState.portal.unlocked =
-                gameState.materials.every(
-                    material =>
-                        material.completed
-                );
-        }
-
-        gameState.gameStarted =
-            Boolean(
-                saved.gameStarted &&
-                gameState.player.name
-            );
-    } catch (error) {
-        console.warn(
-            "Data penyimpanan game tidak dapat dimuat.",
-            error
-        );
-
-        setInitialMaterialStates();
-    }
-}
-
-function recalculateMaterialStatuses() {
-    let previousCompleted = true;
-
-    gameState.materials.forEach(
-        material => {
-            if (material.completed) {
-                material.status =
-                    "completed";
-
-                previousCompleted =
-                    true;
+            if (
+                !DOM.materialModal.hidden ||
+                !DOM.menuConfirmationModal.hidden
+            ) {
+                if (event.key === "Escape") {
+                    closeMaterialModal();
+                    closeMenuConfirmation();
+                }
 
                 return;
             }
 
-            if (previousCompleted) {
-                material.status =
-                    "available";
+            const viewport =
+                getViewportSize();
 
-                previousCompleted =
-                    false;
-            } else {
-                material.status =
-                    "locked";
+            const step =
+                Math.max(
+                    50,
+                    Math.min(
+                        viewport.width,
+                        viewport.height
+                    ) * 0.12
+                );
+
+            switch (event.key) {
+                case "ArrowUp":
+                    event.preventDefault();
+                    moveCameraBy(
+                        0,
+                        -step
+                    );
+                    break;
+
+                case "ArrowDown":
+                    event.preventDefault();
+                    moveCameraBy(
+                        0,
+                        step
+                    );
+                    break;
+
+                case "ArrowLeft":
+                    event.preventDefault();
+                    moveCameraBy(
+                        -step,
+                        0
+                    );
+                    break;
+
+                case "ArrowRight":
+                    event.preventDefault();
+                    moveCameraBy(
+                        step,
+                        0
+                    );
+                    break;
+
+                case "Escape":
+                    event.preventDefault();
+                    openMenuConfirmation();
+                    break;
+
+                default:
+                    break;
             }
         }
     );
 }
 
-function setInitialMaterialStates() {
-    gameState.materials.forEach(
-        (material, index) => {
-            material.completed = false;
 
-            material.status =
-                index === 0
-                    ? "available"
-                    : "locked";
+/* =========================================================
+   29. EVENT LISTENERS
+========================================================= */
+
+function bindEventListeners() {
+    DOM.startButton.addEventListener(
+        "click",
+        startGame
+    );
+
+    DOM.playerNameInput.addEventListener(
+        "input",
+        () => {
+            const value =
+                DOM.playerNameInput.value.trim();
+
+            DOM.playerNameLabel.textContent =
+                value || DEFAULT_PLAYER_NAME;
         }
     );
 
-    gameState.portal.unlocked =
-        false;
-}
+    DOM.materialCompleteButton.addEventListener(
+        "click",
+        completeActiveMaterial
+    );
 
-function resetGame() {
-    try {
-        localStorage.removeItem(
-            STORAGE_KEY
-        );
-    } catch (error) {
-        console.warn(
-            "Progress lokal tidak dapat dihapus.",
-            error
-        );
-    }
+    DOM.materialModalClose.addEventListener(
+        "click",
+        closeMaterialModal
+    );
 
-    gameState.player.name = "";
-    gameState.player.x = 360;
-    gameState.player.y = 360;
-    gameState.player.targetX = 360;
-    gameState.player.targetY = 360;
-    gameState.player.moving = false;
-    gameState.player.characterId =
-        "karakter1";
-    gameState.player.avatar =
-        CHARACTER_ASSETS.karakter1;
-    gameState.player.customAvatar =
-        false;
+    DOM.notificationClose.addEventListener(
+        "click",
+        hideNotification
+    );
 
-    gameState.camera.x = 0;
-    gameState.camera.y = 0;
-    gameState.camera.targetX = 0;
-    gameState.camera.targetY = 0;
-    gameState.camera.userControlled =
-        false;
+    DOM.instructionModalClose.addEventListener(
+        "click",
+        closeInstructionModal
+    );
 
-    gameState.currentMaterial =
-        null;
+    DOM.instructionUnderstandButton.addEventListener(
+        "click",
+        closeInstructionModal
+    );
 
-    gameState.activeInteraction =
-        null;
+    DOM.menuButton.addEventListener(
+        "click",
+        openMenuConfirmation
+    );
 
-    gameState.gameStarted =
-        false;
+    DOM.menuConfirmationClose.addEventListener(
+        "click",
+        closeMenuConfirmation
+    );
 
-    setInitialMaterialStates();
+    DOM.menuCancelButton.addEventListener(
+        "click",
+        closeMenuConfirmation
+    );
 
-    closeMaterialModal();
-    closePortalModal();
-    hideInteractionPrompt();
-
-    updateProgress();
-    updateMaterialVisuals();
-    updatePortalVisual();
-    updatePlayerDOM();
+    DOM.menuConfirmButton.addEventListener(
+        "click",
+        returnToMenu
+    );
 
     document
         .querySelectorAll(
-            'input[name="character"]'
+            "[data-modal-close]"
         )
-        .forEach(input => {
-            input.checked =
-                (
-                    input.dataset.character ||
-                    input.value
-                ) === "karakter1";
+        .forEach((overlay) => {
+            overlay.addEventListener(
+                "click",
+                handleModalOverlayClick
+            );
         });
 
-    if (DOM.playerNameInput) {
-        DOM.playerNameInput.value = "";
-    }
+    initializePointerControls();
+    initializeCameraControls();
+    initializeKeyboardControls();
+    initializeCropPointerEvents();
 
-    selectCharacter("karakter1");
+    window.addEventListener(
+        "resize",
+        handleResize
+    );
 
-    showStartScreen();
-
-    showNotification(
-        "Progress berhasil direset. Permainan dimulai dari awal."
+    window.addEventListener(
+        "beforeunload",
+        clearCropObjectUrl
     );
 }
 
 
 /* =========================================================
-   GAME LOOP
-   ========================================================= */
+   30. GAME LOOP
+========================================================= */
 
-let lastFrameTime = performance.now();
-
-function gameLoop(currentTime) {
-    if (
-        typeof currentTime !==
-        "number"
-    ) {
-        currentTime =
-            performance.now();
+function gameLoop(timestamp) {
+    if (!gameState.lastFrameTime) {
+        gameState.lastFrameTime =
+            timestamp;
     }
 
-    let deltaTime =
-        (currentTime -
-            lastFrameTime) /
-        1000;
-
-    lastFrameTime =
-        currentTime;
-
-    /*
-     * Prevent unusually large movement after
-     * browser tab switching.
-     */
-    deltaTime =
+    const deltaTime =
         Math.min(
-            Math.max(deltaTime, 0),
+            (timestamp -
+                gameState.lastFrameTime) /
+                1000,
             0.05
         );
 
-    updatePlayer(deltaTime);
-    updateCamera();
-    updatePlayerDOM();
-    renderWorldTransform();
-    updateInteractionPrompt();
+    gameState.lastFrameTime =
+        timestamp;
+
+    if (gameState.gameStarted) {
+        updatePlayerMovement(
+            deltaTime
+        );
+    }
 
     requestAnimationFrame(
         gameLoop
     );
 }
 
-function renderWorldTransform() {
-    if (!DOM.gameWorld) return;
-
-    DOM.gameWorld.style.transform =
-        `translate3d(` +
-        `${gameState.camera.x}px, ` +
-        `${gameState.camera.y}px, 0)`;
-}
-
 
 /* =========================================================
-   WORLD CLICK FALLBACK
-   ========================================================= */
-
-function setupWorldMovement() {
-    if (!DOM.gameWorld) return;
-
-    DOM.gameWorld.addEventListener(
-        "click",
-        event => {
-            if (
-                !gameState.gameStarted ||
-                gameState.input.draggingCamera
-            ) {
-                return;
-            }
-
-            if (
-                event.target.closest(
-                    ".material-point, " +
-                    ".quizizz-portal, " +
-                    "button, " +
-                    "a, " +
-                    "input, " +
-                    "label, " +
-                    ".player"
-                )
-            ) {
-                return;
-            }
-
-            /*
-             * This fallback handles direct clicks on
-             * the world when the viewport event did not
-             * receive the event.
-             */
-            const rect =
-                DOM.gameWorld.getBoundingClientRect();
-
-            const worldX =
-                event.clientX -
-                rect.left;
-
-            const worldY =
-                event.clientY -
-                rect.top;
-
-            movePlayerTo(
-                worldX,
-                worldY
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   ACCESSIBILITY / ESCAPE HANDLING
-   ========================================================= */
+   31. START APPLICATION
+========================================================= */
 
 document.addEventListener(
-    "keydown",
-    event => {
-        if (
-            event.key !==
-            "Escape"
-        ) {
-            return;
-        }
-
-        if (
-            DOM.materialModal?.classList.contains(
-                "active"
-            )
-        ) {
-            closeMaterialModal();
-            return;
-        }
-
-        if (
-            DOM.portalModal?.classList.contains(
-                "active"
-            )
-        ) {
-            closePortalModal();
-            return;
-        }
-    }
-);
-
-
-/* =========================================================
-   WINDOW RESIZE
-   ========================================================= */
-
-window.addEventListener(
-    "resize",
+    "DOMContentLoaded",
     () => {
-        clampCameraTarget();
-        clampCameraCurrent();
-
-        if (
-            gameState.gameStarted &&
-            !gameState.camera.userControlled
-        ) {
-            centerCameraOnPlayer(false);
-        }
+        init();
+        requestAnimationFrame(
+            gameLoop
+        );
     }
 );
-
-
-/* =========================================================
-   PUBLIC API
-   =========================================================
-   These functions are intentionally exposed so the HTML
-   or future UI additions can interact with the game without
-   duplicating core logic.
-   ========================================================= */
-
-window.PancasilaExplorer = {
-    state: gameState,
-
-    startGame,
-    resetGame,
-
-    selectCharacter,
-    movePlayerTo,
-
-    openMaterial,
-    completeMaterial,
-
-    showNotification,
-
-    interactWithPortal,
-
-    saveGame,
-    loadGame,
-
-    centerCameraOnPlayer
-};
