@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Utama — Pancasila | Pendidikan Vokasi UB</title>
+    <style>
+        :root {
+            --ub-blue: #0d2b57;
+            --ub-blue-deep: #081d3b;
+            --ub-blue-soft: #eaf0f8;
+            --ub-gold: #c9a227;
+            --ink: #15243a;
+            --muted: #68778d;
+            --surface: #ffffff;
+            --soft: #f4f6f9;
+            --line: #dde4ec;
+            --shadow: 0 14px 40px rgba(21, 36, 58, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--ink);
+            background: var(--soft);
+        }
+
+        button, a { font: inherit; }
+        button { cursor: pointer; }
+        img { max-width: 100%; }
+
+        .shell { min-height: 100vh; }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: clamp(16px, 3vw, 28px) clamp(18px, 5vw, 64px);
+            background: transparent;
+            border-bottom: 0;
+        }
+
+        header img {
+            width: clamp(46px, 6vw, 70px);
+            height: clamp(46px, 6vw, 70px);
+            object-fit: contain;
+            display: block;
+        }
+
+        main {
+            width: min(1080px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 38px 0 70px;
+        }
+
+        .view { display: none; animation: viewIn 260ms ease both; }
+        .view.active { display: block; }
+
+        @keyframes viewIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-hero {
+            padding: 18px 2px 28px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            font-size: .82rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ub-blue);
+        }
+
+        h1, h2, h3, p { margin-top: 0; }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.3rem, 5vw, 4.1rem);
+            letter-spacing: -.04em;
+            line-height: 1;
+            color: var(--ub-blue-deep);
+        }
+
+        .lead {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: clamp(1rem, 2vw, 1.12rem);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 26px;
+        }
+
+        .menu-card {
+            min-height: 210px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+        }
+
+        .menu-card:not(.locked):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 46px rgba(21, 36, 58, 0.11);
+            border-color: #c5d1df;
+        }
+
+        .menu-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: var(--ub-blue-soft);
+            color: var(--ub-blue);
+            font-size: 1.2rem;
+        }
+
+        .menu-card h2 { margin: 20px 0 8px; font-size: 1.45rem; }
+        .menu-card p { margin-bottom: 22px; color: var(--muted); line-height: 1.65; }
+
+        .primary-btn, .secondary-btn, .arrow-btn, .level-btn {
+            border: 0;
+            border-radius: 13px;
+            transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 13px 18px;
+            background: var(--ub-blue);
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .primary-btn:hover { background: #12376d; transform: translateY(-1px); }
+
+        .locked {
+            background: #f0f2f5;
+            box-shadow: none;
+            color: #677487;
+        }
+
+        .locked .menu-icon { background: #e7ebf0; color: #69778a; }
+        .locked .primary-btn {
+            background: #d9dee5;
+            color: #728095;
+            cursor: not-allowed;
+        }
+
+        .locked .primary-btn:hover { transform: none; background: #d9dee5; }
+
+        .lock-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: .85rem;
+            font-weight: 700;
+            color: #6f7b8c;
+        }
+
+        .section-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+            margin-bottom: 7px;
+            font-size: clamp(1.8rem, 4vw, 2.65rem);
+            letter-spacing: -.03em;
+            color: var(--ub-blue-deep);
+        }
+
+        .section-title p { margin: 0; color: var(--muted); }
+
+        .secondary-btn {
+            padding: 10px 14px;
+            color: var(--ub-blue);
+            background: #fff;
+            border: 1px solid var(--line);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .secondary-btn:hover { border-color: #bdc9d8; background: #fbfcfe; }
+
+        .material-card {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 15px 22px;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: .9rem;
+            font-weight: 800;
+        }
+
+        .progress-track {
+            height: 5px;
+            background: #e8edf3;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 16.6667%;
+            background: var(--ub-blue);
+            transition: width 250ms ease;
+        }
+
+        .material-body {
+            padding: clamp(24px, 4vw, 48px);
+        }
+
+        .material-body h3 {
+            margin-bottom: 20px;
+            font-size: clamp(1.65rem, 3.6vw, 2.45rem);
+            line-height: 1.12;
+            letter-spacing: -.025em;
+            color: var(--ub-blue-deep);
+        }
+
+        .summary-label, .points-label {
+            margin: 0 0 8px;
+            font-size: .82rem;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--ub-blue);
+        }
+
+        .summary-text {
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #34445a;
+        }
+
+        .points-list {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #304158;
+            line-height: 1.75;
+        }
+
+        .points-list li { padding-left: .28rem; margin-bottom: 8px; }
+        .points-list ul { margin: 7px 0 2px; padding-left: 1.2rem; }
+
+        .material-nav {
+            display: grid;
+            grid-template-columns: 56px 1fr 56px;
+            align-items: center;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .nav-spacer { min-height: 1px; }
+
+        .arrow-btn {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            background: var(--ub-blue);
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+        .arrow-btn:hover:not(:disabled) { background: #12376d; transform: translateY(-1px); }
+        .arrow-btn:disabled { background: #d9dee5; color: #8793a2; cursor: not-allowed; }
+
+        .nav-center { text-align: center; }
+        .nav-center strong { display: block; margin-bottom: 4px; color: var(--ub-blue-deep); }
+        .nav-center span { color: var(--muted); font-size: .92rem; }
+
+        .tutorial-card {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .tutorial-stage {
+            width: min(680px, 100%);
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            background: #edf1f5;
+            display: grid;
+            place-items: center;
+        }
+
+        .tutorial-stage img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .tutorial-controls {
+            display: grid;
+            grid-template-columns: 52px 1fr 52px;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px 18px;
+        }
+
+        .tutorial-count { text-align: center; font-weight: 900; color: var(--ub-blue-deep); }
+
+        .tutorial-arrow {
+            width: 52px;
+            height: 48px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--ub-blue);
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        .tutorial-arrow:hover:not(:disabled) { background: var(--ub-blue-soft); }
+        .tutorial-arrow:disabled { color: #99a4b2; background: #f3f5f7; cursor: not-allowed; }
+
+        .level-links {
+            width: min(740px, 100%);
+            margin: 24px auto 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .level-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px 18px;
+            background: var(--ub-blue);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 900;
+            box-shadow: 0 8px 22px rgba(13, 43, 87, 0.14);
+        }
+
+        .level-btn:hover { background: #12376d; transform: translateY(-1px); }
+
+        .level-sub { display: block; margin-top: 4px; font-size: .78rem; font-weight: 600; opacity: .78; }
+        .level-arrow { font-size: 1.1rem; }
+
+        .notice {
+            margin-top: 18px;
+            padding: 13px 15px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            font-size: .9rem;
+            line-height: 1.55;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 720px) {
+            main { width: min(100% - 22px, 680px); padding-top: 26px; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .menu-card { min-height: 190px; }
+            .section-top { align-items: flex-start; }
+            .material-nav { grid-template-columns: 50px 1fr 50px; gap: 8px; }
+            .arrow-btn { width: 50px; height: 50px; }
+        }
+
+        @media (max-width: 520px) {
+            header { padding: 14px; }
+            header img { width: 50px; height: 50px; }
+            main { width: min(100% - 16px, 680px); padding-bottom: 40px; }
+            .menu-hero { padding-top: 10px; }
+            .menu-card { padding: 22px; }
+            .section-top { display: grid; gap: 12px; }
+            .secondary-btn { width: 100%; }
+            .material-body { padding: 22px 18px; }
+            .progress-row { padding-left: 16px; padding-right: 16px; }
+            .material-nav { position: sticky; bottom: 10px; background: rgba(244, 246, 249, .96); padding: 10px 0; }
+            .level-links { grid-template-columns: 1fr; }
+            .tutorial-controls { padding-left: 12px; padding-right: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header aria-label="Identitas Universitas Brawijaya">
+            <!-- Logo tetap memakai rasio 1:1 dan object-fit contain. -->
+            <img src="logo_ub.png" alt="Logo Universitas Brawijaya">
+            <img src="logo_vokasi.png" alt="Logo Pendidikan Vokasi Universitas Brawijaya">
+        </header>
+
+        <main>
+            <!-- ====================== MENU UTAMA ====================== -->
+            <section class="view active" id="menuView" aria-labelledby="menuTitle">
+                <div class="menu-hero">
+                    <p class="eyebrow">Pancasila · Pendidikan Vokasi UB</p>
+                    <h1 id="menuTitle">Menu Utama</h1>
+                    <p class="lead">Pilih bagian pembelajaran untuk melanjutkan.</p>
+                </div>
+
+                <div class="menu-grid">
+                    <article class="menu-card">
+                        <div>
+                            <div class="menu-icon" aria-hidden="true">▤</div>
+                            <h2>Pemateri</h2>
+                            <p>Pelajari enam bagian materi Pancasila secara berurutan.</p>
+                        </div>
+                        <button class="primary-btn" id="materiButton" type="button">Pemateri</button>
+                    </article>
+
+                    <article class="menu-card locked" id="levelCard">
+                        <div>
+                            <div class="menu-icon" aria-hidden="true">⌕</div>
+                            <h2>Level</h2>
+                            <p>Bagian level terbuka setelah seluruh materi Pemateri selesai.</p>
+                        </div>
+                        <div>
+                            <div class="lock-note" id="lockNote"><span aria-hidden="true">🔒</span> Terkunci sampai materi selesai</div>
+                            <button class="primary-btn" id="levelButton" type="button" disabled>Level</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ====================== PEMATERI ====================== -->
+            <section class="view" id="materialView" aria-labelledby="materialHeading">
+                <div class="section-top">
+                    <div class="section-title">
+                        <h2 id="materialHeading">Pemateri</h2>
+                        <p>Materi Pancasila dalam enam bagian.</p>
+                    </div>
+                    <button class="secondary-btn" id="materialBack" type="button">← Kembali</button>
+                </div>
+
+                <article class="material-card">
+                    <div class="progress-row">
+                        <span id="materialCounter">1 / 6</span>
+                        <span>Materi Pancasila</span>
+                    </div>
+                    <div class="progress-track" aria-hidden="true">
+                        <div class="progress-fill" id="materialProgress"></div>
+                    </div>
+                    <div class="material-body">
+                        <h3 id="materialTitle"></h3>
+                        <p class="summary-label">Rangkuman:</p>
+                        <p class="summary-text" id="materialSummary"></p>
+                        <p class="points-label">Poin-Poin Penting:</p>
+                        <div id="materialPoints"></div>
+                    </div>
+                </article>
+
+                <div class="material-nav" aria-label="Navigasi materi">
+                    <button class="arrow-btn" id="materialPrev" type="button" aria-label="Materi sebelumnya">←</button>
+                    <div class="nav-center">
+                        <strong id="navActionLabel">Lanjut ke materi berikutnya</strong>
+                        <span id="navActionHint">Gunakan panah untuk berpindah materi.</span>
+                    </div>
+                    <button class="arrow-btn" id="materialNext" type="button" aria-label="Materi berikutnya">→</button>
+                </div>
+            </section>
+
+            <!-- ====================== LEVEL / TUTORIAL ====================== -->
+            <section class="view" id="levelView" aria-labelledby="levelHeading">
+                <div class="section-top">
+                    <div class="section-title">
+                        <h2 id="levelHeading">Level</h2>
+                        <p>Tutorial 1–8 sebelum masuk ke level permainan.</p>
+                    </div>
+                    <button class="secondary-btn" id="levelBack" type="button">← Kembali</button>
+                </div>
+
+                <article class="tutorial-card" aria-label="Tutorial level">
+                    <div class="tutorial-stage" id="tutorialStage">
+                        <img id="tutorialImage" src="tutorial1.png" alt="Tutorial 1 dari 8">
+                    </div>
+                    <div class="tutorial-controls">
+                        <button class="tutorial-arrow" id="tutorialPrev" type="button" aria-label="Tutorial sebelumnya">←</button>
+                        <div class="tutorial-count" id="tutorialCounter">1 / 8</div>
+                        <button class="tutorial-arrow" id="tutorialNext" type="button" aria-label="Tutorial berikutnya">→</button>
+                    </div>
+                </article>
+
+                <!--
+                    LINK LEVEL: cukup ganti dua nilai di JavaScript (LEVEL_LINKS)
+                    untuk mengganti URL YouTube di kemudian hari.
+                -->
+                <div class="level-links">
+                    <a class="level-btn" id="level1Link" href="https://www.youtube.com/shorts/H8m9UCPLd7U" target="_blank" rel="noopener">
+                        <span>LEVEL 1<span class="level-sub">Buka level</span></span>
+                        <span class="level-arrow" aria-hidden="true">→</span>
+                    </a>
+                    <a class="level-btn" id="level2Link" href="https://www.youtube.com/shorts/H8m9UCPLd7U" target="_blank" rel="noopener">
+                        <span>LEVEL 2<span class="level-sub">Buka level</span></span>
+                        <span class="level-arrow" aria-hidden="true">→</span>
+                    </a>
+                </div>
+
+                <div class="notice">Level 1 dan Level 2 sama-sama terbuka setelah bagian Level dapat diakses.</div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        /* ====================== KONFIGURASI MUDAH DIUBAH ====================== */
+        const ASSET_PATH = '';
+        const TUTORIAL_IMAGES = [
+            'tutorial1.png',
+            'tutorial2.png',
+            'tutorial3.png',
+            'tutorial4.png',
+            'tutorial5.png',
+            'tutorial6.png',
+            'tutorial7.png',
+            'tutorial8.png'
+        ];
+
+        // Ganti URL dua level ini bila diperlukan.
+        const LEVEL_LINKS = {
+            level1: 'https://www.youtube.com/shorts/H8m9UCPLd7U',
+            level2: 'https://www.youtube.com/shorts/H8m9UCPLd7U'
+        };
+
+        const STORAGE_KEY = 'pancasila_pemateri_selesai';
+
+        /* ====================== DATA MATERI — JANGAN DIUBAH ====================== */
+        const MATERIALS = [
+            {
+                title: '1. Pancasila Dalam Kajian Sejarah',
+                summary: 'Pancasila terbentuk melalui proses sejarah panjang dan kemudian disahkan sebagai dasar negara Indonesia.',
+                points: `
+                    <ul class="points-list">
+                        <li><strong>29 Mei–1 Juni 1945:</strong> Sidang BPUPK I membahas dasar negara.</li>
+                        <li><strong>1 Juni 1945:</strong> Soekarno memperkenalkan istilah <strong>Pancasila</strong>.</li>
+                        <li><strong>10–17 Juli 1945:</strong> Pembahasan dan perumusan Piagam Jakarta.</li>
+                        <li><strong>18 Agustus 1945:</strong> Pancasila disahkan sebagai dasar negara dalam UUD 1945.</li>
+                        <li>Tokoh utama: <strong>Muhammad Yamin, Soepomo, dan Soekarno</strong>.</li>
+                        <li>Perjalanan Pancasila: <strong>Purbakala → Hindu-Buddha → Islam → Kolonialisme → BPUPK → Orde Lama → Orde Baru → Reformasi</strong>.</li>
+                        <li>Tantangan saat ini: <strong>korupsi, intoleransi, radikalisme, hoaks, dan politik identitas</strong>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: '2. Pancasila sebagai Sistem Filsafat',
+                summary: 'Pancasila merupakan sistem filsafat karena kelima silanya saling berhubungan dan menjadi dasar pemikiran kehidupan bangsa.',
+                points: `
+                    <ul class="points-list">
+                        <li>Filsafat = berpikir <strong>radikal, sistematis, menyeluruh, dan logis</strong>.</li>
+                        <li>Pancasila merupakan <strong>sistem yang utuh</strong>, bukan kumpulan nilai yang terpisah.</li>
+                        <li>Lima sila memiliki hubungan <strong>hierarkis-piramidal</strong> dan saling mengisi.</li>
+                        <li>Filsafat Pancasila mencakup:
+                            <ul>
+                                <li><strong>Ontologi</strong> → hakikat</li>
+                                <li><strong>Epistemologi</strong> → cara memperoleh pengetahuan</li>
+                                <li><strong>Aksiologi</strong> → nilai/kegunaan</li>
+                            </ul>
+                        </li>
+                        <li>Pancasila menjadi <strong>pandangan hidup</strong> dan pedoman dalam kehidupan sehari-hari.</li>
+                        <li>Nilai Pancasila berasal dari <strong>budaya, agama, dan pengalaman sejarah bangsa Indonesia</strong>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: '3. Pancasila sebagai Ideologi',
+                summary: 'Pancasila merupakan <strong>ideologi terbuka</strong> yang menjadi jalan tengah antara berbagai ideologi dan menyesuaikan penerapannya dengan perkembangan zaman.',
+                points: `
+                    <ul class="points-list">
+                        <li>Ideologi = seperangkat <strong>nilai, gagasan, dan cita-cita</strong> yang menjadi pedoman.</li>
+                        <li>Pancasila adalah <strong>ideologi terbuka</strong>.</li>
+                        <li><strong>Nilai dasar tetap</strong>, tetapi penerapannya dapat menyesuaikan perkembangan zaman.</li>
+                        <li>Menggabungkan nilai universal seperti <strong>HAM, keadilan, dan demokrasi</strong> dengan <strong>gotong royong dan toleransi</strong>.</li>
+                        <li>Menjaga keseimbangan antara <strong>kebebasan individu dan kepentingan bersama</strong>.</li>
+                        <li>Tantangan: <strong>radikalisme, disinformasi, kapitalisme global, dan politik identitas</strong>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: '4. Pancasila sebagai Dasar Negara',
+                summary: 'Pancasila merupakan dasar negara, sumber dari segala sumber hukum, dan landasan penyelenggaraan negara.',
+                points: `
+                    <ul class="points-list">
+                        <li>Pancasila menjadi <strong>sumber dari segala sumber hukum</strong>.</li>
+                        <li>Menjadi <strong>cita hukum dan landasan pembangunan nasional</strong>.</li>
+                        <li>Pancasila tercantum dalam <strong>Pembukaan UUD 1945 Alinea IV</strong>.</li>
+                        <li>Hubungan dengan UUD 1945:
+                            <ul>
+                                <li><strong>Formal:</strong> tercantum dalam Pembukaan UUD 1945.</li>
+                                <li><strong>Material:</strong> menjadi isi pokok/fundamental Pembukaan UUD 1945.</li>
+                            </ul>
+                        </li>
+                        <li>Pancasila diterapkan dalam bidang <strong>politik, ekonomi, sosial budaya, serta pertahanan dan keamanan</strong>.</li>
+                        <li>Kedudukan Pancasila tetap menjadi dasar negara meskipun UUD 1945 mengalami amandemen.</li>
+                    </ul>
+                `
+            },
+            {
+                title: '5. Pancasila sebagai Sistem Etika',
+                summary: 'Pancasila sebagai sistem etika menjadi pedoman untuk menentukan <strong>baik-buruk dan benar-salah</strong> dalam kehidupan bermasyarakat dan bernegara.',
+                points: `
+                    <ul class="points-list">
+                        <li><strong>Etika:</strong> pemikiran tentang baik-buruk dan benar-salah.</li>
+                        <li><strong>Moral:</strong> nilai dan norma yang menjadi pedoman perilaku.</li>
+                        <li><strong>Etiket:</strong> aturan sopan santun.</li>
+                        <li>Hubungan: <strong>Etika → Moral → Etiket</strong>.</li>
+                        <li>Aliran etika:
+                            <ul>
+                                <li>Hedonisme</li>
+                                <li>Utilitarianisme</li>
+                                <li>Deontologi</li>
+                                <li>Etika kebajikan</li>
+                            </ul>
+                        </li>
+                        <li>Etika Pancasila menggabungkan nilai <strong>religius, kemanusiaan, kebangsaan, demokrasi, dan keadilan</strong>.</li>
+                        <li>Pancasila menjadi pedoman menghadapi <strong>intoleransi, diskriminasi, konflik, korupsi, dan ketidakadilan</strong>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: '6. Pancasila dan IPTEK',
+                summary: 'Pancasila menjadi <strong>pedoman nilai dan moral</strong> agar perkembangan IPTEK tetap berorientasi pada manusia dan kepentingan masyarakat.',
+                points: `
+                    <ul class="points-list">
+                        <li>IPTEK memberikan manfaat sekaligus risiko.</li>
+                        <li>IPTEK membutuhkan nilai karena penggunaannya dipengaruhi <strong>kepentingan manusia</strong>.</li>
+                        <li>Pancasila sebagai filter IPTEK:
+                            <ul>
+                                <li><strong>Sila 1:</strong> sesuai moral.</li>
+                                <li><strong>Sila 2:</strong> menjaga martabat manusia.</li>
+                                <li><strong>Sila 3:</strong> memperkuat persatuan.</li>
+                                <li><strong>Sila 4:</strong> bersifat inklusif.</li>
+                                <li><strong>Sila 5:</strong> manfaatnya harus adil.</li>
+                            </ul>
+                        </li>
+                        <li>Contoh isu: <strong>AI, Big Data, privasi, diskriminasi algoritma, media sosial, dan disinformasi</strong>.</li>
+                        <li>Intinya: <strong>IPTEK harus memanusiakan manusia</strong>, bukan merugikan manusia.</li>
+                    </ul>
+                `
+            }
+        ];
+
+        /* ====================== ELEMEN ====================== */
+        const menuView = document.getElementById('menuView');
+        const materialView = document.getElementById('materialView');
+        const levelView = document.getElementById('levelView');
+
+        const materiButton = document.getElementById('materiButton');
+        const levelButton = document.getElementById('levelButton');
+        const levelCard = document.getElementById('levelCard');
+        const lockNote = document.getElementById('lockNote');
+
+        const materialBack = document.getElementById('materialBack');
+        const levelBack = document.getElementById('levelBack');
+        const materialTitle = document.getElementById('materialTitle');
+        const materialSummary = document.getElementById('materialSummary');
+        const materialPoints = document.getElementById('materialPoints');
+        const materialCounter = document.getElementById('materialCounter');
+        const materialProgress = document.getElementById('materialProgress');
+        const materialPrev = document.getElementById('materialPrev');
+        const materialNext = document.getElementById('materialNext');
+        const navActionLabel = document.getElementById('navActionLabel');
+        const navActionHint = document.getElementById('navActionHint');
+
+        const tutorialImage = document.getElementById('tutorialImage');
+        const tutorialCounter = document.getElementById('tutorialCounter');
+        const tutorialPrev = document.getElementById('tutorialPrev');
+        const tutorialNext = document.getElementById('tutorialNext');
+        const level1Link = document.getElementById('level1Link');
+        const level2Link = document.getElementById('level2Link');
+
+        let materialIndex = 0;
+        let tutorialIndex = 0;
+
+        /* ====================== NAVIGASI VIEW ====================== */
+        function showView(view) {
+            [menuView, materialView, levelView].forEach((item) => item.classList.remove('active'));
+            view.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showMenu() {
+            showView(menuView);
+        }
+
+        function startMaterials() {
+            materialIndex = 0;
+            renderMaterial();
+            showView(materialView);
+        }
+
+        function openLevel() {
+            if (!isLearningComplete()) return;
+            tutorialIndex = 0;
+            renderTutorial();
+            showView(levelView);
+        }
+
+        /* ====================== STATUS UNLOCK ====================== */
+        function isLearningComplete() {
+            return localStorage.getItem(STORAGE_KEY) === 'true';
+        }
+
+        function updateLevelLock() {
+            const unlocked = isLearningComplete();
+            levelButton.disabled = !unlocked;
+            levelCard.classList.toggle('locked', !unlocked);
+
+            if (unlocked) {
+                lockNote.innerHTML = '<span aria-hidden="true">🔓</span> Level terbuka';
+                levelButton.textContent = 'Level';
+            } else {
+                lockNote.innerHTML = '<span aria-hidden="true">🔒</span> Terkunci sampai materi selesai';
+                levelButton.textContent = 'Level';
+            }
+        }
+
+        function completeMaterials() {
+            localStorage.setItem(STORAGE_KEY, 'true');
+            updateLevelLock();
+            showMenu();
+        }
+
+        /* ====================== RENDER MATERI ====================== */
+        function renderMaterial() {
+            const material = MATERIALS[materialIndex];
+            const isLast = materialIndex === MATERIALS.length - 1;
+
+            materialTitle.textContent = material.title;
+            materialSummary.innerHTML = material.summary;
+            materialPoints.innerHTML = material.points;
+            materialCounter.textContent = `${materialIndex + 1} / ${MATERIALS.length}`;
+            materialProgress.style.width = `${((materialIndex + 1) / MATERIALS.length) * 100}%`;
+
+            materialPrev.disabled = materialIndex === 0;
+            materialPrev.setAttribute('aria-label', materialIndex === 0 ? 'Tidak ada materi sebelumnya' : 'Materi sebelumnya');
+
+            materialNext.textContent = isLast ? '✓' : '→';
+            materialNext.setAttribute('aria-label', isLast ? 'Selesaikan materi' : 'Materi berikutnya');
+            navActionLabel.textContent = isLast ? 'Selesaikan materi' : 'Lanjut ke materi berikutnya';
+            navActionHint.textContent = isLast ? 'Setelah selesai, Anda kembali ke Menu Utama.' : 'Gunakan panah untuk berpindah materi.';
+        }
+
+        materialPrev.addEventListener('click', () => {
+            if (materialIndex <= 0) return;
+            materialIndex -= 1;
+            renderMaterial();
+        });
+
+        materialNext.addEventListener('click', () => {
+            if (materialIndex < MATERIALS.length - 1) {
+                materialIndex += 1;
+                renderMaterial();
+            } else {
+                completeMaterials();
+            }
+        });
+
+        /* ====================== TUTORIAL CAROUSEL ====================== */
+        function renderTutorial() {
+            tutorialImage.src = ASSET_PATH + TUTORIAL_IMAGES[tutorialIndex];
+            tutorialImage.alt = `Tutorial ${tutorialIndex + 1} dari ${TUTORIAL_IMAGES.length}`;
+            tutorialCounter.textContent = `${tutorialIndex + 1} / ${TUTORIAL_IMAGES.length}`;
+            tutorialPrev.disabled = tutorialIndex === 0;
+            tutorialNext.disabled = tutorialIndex === TUTORIAL_IMAGES.length - 1;
+        }
+
+        function moveTutorial(direction) {
+            const nextIndex = tutorialIndex + direction;
+            if (nextIndex < 0 || nextIndex >= TUTORIAL_IMAGES.length) return;
+            tutorialIndex = nextIndex;
+            renderTutorial();
+        }
+
+        tutorialPrev.addEventListener('click', () => moveTutorial(-1));
+        tutorialNext.addEventListener('click', () => moveTutorial(1));
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const tutorialStage = document.getElementById('tutorialStage');
+
+        tutorialStage.addEventListener('touchstart', (event) => {
+            if (!event.changedTouches.length) return;
+            touchStartX = event.changedTouches[0].clientX;
+            touchStartY = event.changedTouches[0].clientY;
+        }, { passive: true });
+
+        tutorialStage.addEventListener('touchend', (event) => {
+            if (!event.changedTouches.length) return;
+            const dx = event.changedTouches[0].clientX - touchStartX;
+            const dy = event.changedTouches[0].clientY - touchStartY;
+
+            if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+            moveTutorial(dx < 0 ? 1 : -1);
+        }, { passive: true });
+
+        /* ====================== LINK LEVEL ====================== */
+        level1Link.href = LEVEL_LINKS.level1;
+        level2Link.href = LEVEL_LINKS.level2;
+
+        /* ====================== TOMBOL KEMBALI / MENU ====================== */
+        materiButton.addEventListener('click', startMaterials);
+        levelButton.addEventListener('click', openLevel);
+        materialBack.addEventListener('click', showMenu);
+        levelBack.addEventListener('click', showMenu);
+
+        // Kondisi awal: Level mengikuti status localStorage.
+        updateLevelLock();
+        renderMaterial();
+        renderTutorial();
+    </script>
+</body>
+</html>
