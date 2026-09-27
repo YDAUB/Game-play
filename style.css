@@ -31,12 +31,10 @@
     --radius-lg: 22px;
 
     --hud-height: 68px;
-    --viewport-width: 100%;
-    --viewport-height: calc(100vh - var(--hud-height));
 }
 
 /* =========================================================
-   RESET & BASE
+   RESET
 ========================================================= */
 
 *,
@@ -62,6 +60,7 @@ body {
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
+
     color: var(--gray-900);
     background: var(--blue-900);
     line-height: 1.5;
@@ -91,7 +90,7 @@ img {
 }
 
 /* =========================================================
-   ROOT APP
+   ROOT
 ========================================================= */
 
 #game-app {
@@ -109,34 +108,55 @@ img {
     position: fixed;
     inset: 0;
     z-index: 1000;
+
     width: 100%;
     min-height: 100vh;
+
     overflow-y: auto;
-    background:
-        radial-gradient(circle at 12% 15%, rgba(245, 196, 0, 0.16), transparent 28%),
-        radial-gradient(circle at 88% 85%, rgba(35, 132, 223, 0.18), transparent 30%),
-        linear-gradient(135deg, #071d49 0%, #0b2d68 48%, #124b9b 100%);
+
     padding: 32px 20px;
+
+    background:
+        radial-gradient(
+            circle at 12% 15%,
+            rgba(245, 196, 0, 0.16),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 88% 85%,
+            rgba(35, 132, 223, 0.18),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #071d49 0%,
+            #0b2d68 48%,
+            #124b9b 100%
+        );
 }
 
 .start-container {
     width: min(1050px, 100%);
     margin: 0 auto;
     padding: 36px;
+
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: var(--radius-lg);
+
     background: rgba(255, 255, 255, 0.97);
     box-shadow: var(--shadow-lg);
 }
 
 .game-header {
-    text-align: center;
     margin-bottom: 32px;
+    text-align: center;
 }
 
 .game-header h1 {
     margin: 0 0 8px;
+
     color: var(--blue-900);
+
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 800;
     letter-spacing: -0.04em;
@@ -145,12 +165,13 @@ img {
 .game-instruction {
     max-width: 720px;
     margin: 0 auto;
+
     color: var(--gray-700);
     font-size: 1rem;
 }
 
 /* =========================================================
-   START SCREEN SECTIONS
+   START SCREEN CARDS
 ========================================================= */
 
 .character-selection,
@@ -158,8 +179,10 @@ img {
 .player-name-section {
     margin-top: 24px;
     padding: 22px;
+
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-md);
+
     background: var(--white);
     box-shadow: var(--shadow-sm);
 }
@@ -168,6 +191,7 @@ img {
 .custom-avatar-section h2,
 .player-name-section h2 {
     margin: 0 0 16px;
+
     color: var(--blue-800);
     font-size: 1.15rem;
 }
@@ -184,17 +208,22 @@ img {
 
 .character-option {
     position: relative;
+
     min-height: 190px;
     padding: 18px;
+
     border: 2px solid transparent;
     border-radius: var(--radius-md);
+
     background: var(--gray-100);
     color: var(--gray-900);
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
+
     transition:
         transform 0.2s ease,
         background 0.2s ease,
@@ -204,8 +233,10 @@ img {
 
 .character-option:hover {
     transform: translateY(-3px);
+
     background: var(--blue-100);
     border-color: rgba(23, 105, 194, 0.35);
+
     box-shadow: var(--shadow-sm);
 }
 
@@ -216,11 +247,18 @@ img {
 
 .character-option.selected,
 .character-option[aria-selected="true"] {
-    background: linear-gradient(145deg, var(--blue-100), #ffffff);
+    background: linear-gradient(
+        145deg,
+        var(--blue-100),
+        #ffffff
+    );
+
     border-color: var(--yellow-500);
+
     box-shadow:
         0 0 0 3px rgba(245, 196, 0, 0.12),
         var(--shadow-md);
+
     transform: translateY(-2px);
 }
 
@@ -232,7 +270,9 @@ img {
 .character-preview {
     width: 110px;
     height: 110px;
+
     object-fit: contain;
+
     border: 0;
     background: transparent;
 }
@@ -256,8 +296,10 @@ img {
 #avatar-upload {
     width: 100%;
     padding: 11px;
+
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-sm);
+
     background: var(--gray-100);
     color: var(--gray-700);
 }
@@ -270,18 +312,25 @@ img {
 
 .avatar-crop-area {
     position: relative;
+
     width: min(300px, 100%);
     aspect-ratio: 1 / 1;
+
     margin: 4px auto;
+
     overflow: hidden;
+
     border: 2px dashed var(--blue-500);
     border-radius: var(--radius-md);
+
     background:
         linear-gradient(45deg, #f0f3f7 25%, transparent 25%),
         linear-gradient(-45deg, #f0f3f7 25%, transparent 25%),
         linear-gradient(45deg, transparent 75%, #f0f3f7 75%),
         linear-gradient(-45deg, transparent 75%, #f0f3f7 75%);
+
     background-size: 24px 24px;
+
     background-position:
         0 0,
         0 12px,
@@ -291,20 +340,27 @@ img {
 
 .avatar-crop-container {
     position: relative;
+
     width: 100%;
     height: 100%;
+
     overflow: hidden;
 }
 
 #avatar-upload-preview {
     position: absolute;
+
     left: 50%;
     top: 50%;
+
     width: 100%;
     height: 100%;
+
     object-fit: contain;
+
     transform: translate(-50%, -50%);
     transform-origin: center;
+
     user-select: none;
     -webkit-user-drag: none;
 }
@@ -319,12 +375,17 @@ img {
 .avatar-crop-controls button {
     min-width: 44px;
     min-height: 40px;
+
     padding: 8px 14px;
+
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-sm);
+
     background: var(--white);
     color: var(--blue-800);
+
     font-weight: 700;
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
@@ -337,6 +398,7 @@ img {
 
 .avatar-upload-info {
     margin: 0;
+
     color: var(--gray-500);
     font-size: 0.82rem;
     text-align: center;
@@ -353,11 +415,15 @@ img {
 #player-name {
     width: 100%;
     min-height: 46px;
+
     padding: 10px 13px;
+
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-sm);
+
     background: var(--white);
     color: var(--gray-900);
+
     outline: none;
 }
 
@@ -368,34 +434,40 @@ img {
 .start-action {
     display: flex;
     justify-content: center;
+
     margin-top: 28px;
 }
 
 #start-game-button {
     min-width: 230px;
     min-height: 52px;
+
     padding: 13px 26px;
+
     border: 0;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue-700),
+            var(--blue-500)
+        );
+
     color: var(--white);
     font-weight: 800;
+
     box-shadow: 0 8px 20px rgba(18, 75, 155, 0.25);
+
     transition:
         transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
 #start-game-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(18, 75, 155, 0.32);
-    background: linear-gradient(135deg, var(--blue-800), var(--blue-600));
-}
 
-#start-game-button:focus-visible {
-    outline: 3px solid rgba(245, 196, 0, 0.65);
-    outline-offset: 3px;
+    box-shadow: 0 12px 25px rgba(18, 75, 155, 0.32);
 }
 
 /* =========================================================
@@ -405,10 +477,22 @@ img {
 #game-screen {
     position: fixed;
     inset: 0;
+
     z-index: 100;
+
     width: 100%;
     height: 100vh;
-    background: #b9dca5;
+
+    /*
+     * Background di luar circular viewport.
+     * Map sendiri tetap putih.
+     */
+    background:
+        radial-gradient(
+            circle at center,
+            #f7f9fc 0%,
+            #e8edf5 100%
+        );
 }
 
 /* =========================================================
@@ -417,19 +501,29 @@ img {
 
 #game-hud {
     position: absolute;
+
     top: 0;
     left: 0;
     right: 0;
+
     z-index: 500;
+
     height: var(--hud-height);
+
     padding: 10px 18px;
+
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
+
     gap: 14px;
+
     background: rgba(7, 29, 73, 0.94);
+
     color: var(--white);
+
     box-shadow: 0 5px 18px rgba(7, 29, 73, 0.18);
+
     backdrop-filter: blur(8px);
 }
 
@@ -439,25 +533,33 @@ img {
 
 .hud-player-name {
     display: inline-block;
+
     max-width: 240px;
+
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
     font-weight: 700;
 }
 
 .progress-container {
     min-width: 150px;
+
     padding: 8px 16px;
+
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 999px;
+
     background: rgba(255, 255, 255, 0.08);
+
     text-align: center;
     font-size: 0.9rem;
 }
 
 .progress-container strong {
     margin-left: 5px;
+
     color: var(--yellow-400);
     font-size: 1rem;
 }
@@ -469,12 +571,17 @@ img {
 
 #menu-button {
     min-height: 40px;
+
     padding: 8px 15px;
+
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 9px;
+
     background: rgba(255, 255, 255, 0.08);
+
     color: var(--white);
     font-weight: 700;
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
@@ -486,90 +593,127 @@ img {
 }
 
 /* =========================================================
-   GAME VIEWPORT
+   CIRCULAR GAME VIEWPORT
 ========================================================= */
+
+/*
+ * Desktop:
+ * Circular camera window.
+ *
+ * Ukuran width dan height sengaja sama agar selalu
+ * benar-benar lingkaran, bukan oval.
+ */
 
 #game-viewport {
     position: absolute;
-    top: var(--hud-height);
-    right: 0;
-    bottom: 0;
-    left: 0;
+
+    top: calc(
+        var(--hud-height) +
+        max(12px, 2vh)
+    );
+
+    left: 50%;
+
+    width: min(
+        calc(100vw - 36px),
+        calc(100vh - var(--hud-height) - 60px),
+        920px
+    );
+
+    aspect-ratio: 1 / 1;
+
+    height: auto;
+
+    transform: translateX(-50%);
+
     overflow: hidden;
+
+    border-radius: 50%;
+
+    /*
+     * Border digunakan sebagai frame kamera,
+     * bukan bagian dari map.
+     */
+    border: 5px solid rgba(7, 29, 73, 0.95);
+
+    background: var(--white);
+
+    box-shadow:
+        0 18px 45px rgba(7, 29, 73, 0.22),
+        0 0 0 8px rgba(255, 255, 255, 0.5);
+
     outline: none;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.12),
-            transparent 30%
-        ),
-        #b8dca3;
+
     cursor: crosshair;
+
+    /*
+     * Penting untuk gesture kamera JS.
+     * JavaScript tetap dapat menerima pointer/touch event.
+     */
     touch-action: none;
 }
 
 /* =========================================================
-   GAME WORLD
+   GAME WORLD / CLEAN GRID MAP
 ========================================================= */
 
 #game-world {
     position: absolute;
+
     top: 0;
     left: 0;
+
     width: 2400px;
     height: 1800px;
+
     overflow: visible;
-    background-color: #b9dca5;
+
+    /*
+     * MAP PUTIH.
+     * Tidak ada rumput, taman, pohon, jalan,
+     * terrain atau landscape.
+     */
+    background-color: #ffffff;
+
+    /*
+     * Grid sangat ringan.
+     */
     background-image:
         linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0.035) 1px,
+            to right,
+            rgba(107, 114, 128, 0.11) 1px,
             transparent 1px
         ),
         linear-gradient(
-            rgba(255, 255, 255, 0.035) 1px,
+            to bottom,
+            rgba(107, 114, 128, 0.11) 1px,
             transparent 1px
         );
+
     background-size: 80px 80px;
+
+    /*
+     * Script.js tetap bebas mengontrol:
+     * transform: translate(...)
+     * transform: translate(...) scale(...)
+     */
     will-change: transform;
+
     transform-origin: 0 0;
 }
 
 /*
- * Lightweight map paths.
- * These use pseudo-elements so no additional HTML is required.
+ * Hapus dekorasi map lama.
+ *
+ * Kedua pseudo-element sebelumnya digunakan untuk
+ * membuat jalan/landscape. Sekarang tidak boleh
+ * mengganggu map putih-grid.
  */
 
-#game-world::before {
-    content: "";
-    position: absolute;
-    left: 160px;
-    top: 800px;
-    width: 2080px;
-    height: 180px;
-    border-radius: 100px;
-    background: rgba(236, 223, 184, 0.9);
-    box-shadow:
-        0 -8px 0 rgba(143, 120, 75, 0.08),
-        0 8px 0 rgba(143, 120, 75, 0.08);
-    transform: rotate(-8deg);
-    pointer-events: none;
-}
-
+#game-world::before,
 #game-world::after {
-    content: "";
-    position: absolute;
-    left: 1080px;
-    top: 180px;
-    width: 180px;
-    height: 1480px;
-    border-radius: 100px;
-    background: rgba(236, 223, 184, 0.9);
-    box-shadow:
-        -8px 0 0 rgba(143, 120, 75, 0.08),
-        8px 0 0 rgba(143, 120, 75, 0.08);
-    transform: rotate(6deg);
-    pointer-events: none;
+    display: none;
+    content: none;
 }
 
 /* =========================================================
@@ -578,48 +722,76 @@ img {
 
 #player {
     position: absolute;
+
     left: 1150px;
     top: 850px;
+
     z-index: 300;
+
     width: 86px;
     min-height: 110px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
+
     pointer-events: none;
+
     transform-origin: center bottom;
+
     transition: transform 0.08s linear;
 }
 
 #player-avatar {
     width: 72px;
     height: 82px;
+
+    /*
+     * Avatar tetap menggunakan bentuk aslinya.
+     * Tidak ada lingkaran, border, frame atau background.
+     */
     object-fit: contain;
     object-position: center bottom;
+
     border: 0;
     border-radius: 0;
+
     background: transparent;
-    filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.18));
+
+    filter: drop-shadow(
+        0 5px 4px rgba(0, 0, 0, 0.18)
+    );
 }
 
 #player-name-label {
     position: absolute;
+
     bottom: calc(100% - 5px);
     left: 50%;
+
     transform: translateX(-50%);
+
     max-width: 150px;
+
     padding: 3px 8px;
+
     border-radius: 6px;
+
     background: rgba(7, 29, 73, 0.82);
+
     color: var(--white);
+
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1.2;
+
     text-align: center;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
@@ -629,19 +801,29 @@ img {
 
 .material-area {
     position: absolute;
+
     z-index: 150;
+
     width: 230px;
     min-height: 205px;
+
     padding: 14px;
+
     border-radius: 18px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
+
+    background: rgba(255, 255, 255, 0.97);
+
     border: 2px solid rgba(18, 75, 155, 0.18);
+
     box-shadow: var(--shadow-md);
+
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
@@ -651,49 +833,32 @@ img {
 
 .material-area:hover {
     transform: translateY(-4px);
+
     box-shadow: var(--shadow-lg);
-}
-
-.material-area:nth-of-type(1) {
-    left: 230px;
-    top: 260px;
-}
-
-.material-area:nth-of-type(2) {
-    left: 810px;
-    top: 190px;
-}
-
-.material-area:nth-of-type(3) {
-    right: 220px;
-    top: 300px;
-}
-
-.material-area:nth-of-type(4) {
-    left: 250px;
-    bottom: 220px;
-}
-
-.material-area:nth-of-type(5) {
-    left: 860px;
-    bottom: 170px;
-}
-
-.material-area:nth-of-type(6) {
-    right: 180px;
-    bottom: 210px;
 }
 
 .material-object {
     width: 62px;
     height: 62px;
+
     margin-bottom: 9px;
+
     border-radius: 16px;
+
     display: grid;
     place-items: center;
-    background: linear-gradient(145deg, var(--blue-700), var(--blue-500));
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--blue-700),
+            var(--blue-500)
+        );
+
     color: var(--white);
-    box-shadow: 0 7px 14px rgba(18, 75, 155, 0.24);
+
+    box-shadow:
+        0 7px 14px rgba(18, 75, 155, 0.24);
 }
 
 .material-number {
@@ -703,29 +868,41 @@ img {
 
 .material-label h2 {
     margin: 0;
+
     color: var(--blue-900);
+
     font-size: 0.98rem;
     line-height: 1.25;
 }
 
 .material-status {
     display: inline-block;
+
     margin-top: 5px;
+
     color: var(--gray-500);
+
     font-size: 0.75rem;
     font-weight: 700;
 }
 
 .material-open-button {
     margin-top: 11px;
+
     min-height: 36px;
+
     padding: 7px 13px;
+
     border: 0;
     border-radius: 8px;
+
     background: var(--blue-700);
+
     color: var(--white);
+
     font-size: 0.78rem;
     font-weight: 700;
+
     transition:
         transform 0.2s ease,
         background 0.2s ease;
@@ -736,39 +913,53 @@ img {
     transform: translateY(-1px);
 }
 
-/* Locked material */
+/* =========================================================
+   MATERIAL STATES
+========================================================= */
 
 .material-area.locked {
     opacity: 0.78;
 }
 
 .material-area.locked .material-object {
-    background: linear-gradient(145deg, #64748b, #94a3b8);
+    background:
+        linear-gradient(
+            145deg,
+            #64748b,
+            #94a3b8
+        );
 }
 
 .material-area.locked .material-open-button {
     background: #64748b;
 }
 
-/* Unlocked material */
-
 .material-area.unlocked {
     border-color: rgba(245, 196, 0, 0.75);
 }
 
 .material-area.unlocked .material-object {
-    background: linear-gradient(145deg, var(--blue-700), var(--yellow-500));
+    background:
+        linear-gradient(
+            145deg,
+            var(--blue-700),
+            var(--yellow-500)
+        );
 }
-
-/* Completed material */
 
 .material-area.completed {
     border-color: rgba(22, 132, 91, 0.55);
-    background: rgba(245, 255, 250, 0.95);
+
+    background: rgba(245, 255, 250, 0.97);
 }
 
 .material-area.completed .material-object {
-    background: linear-gradient(145deg, #16845b, #2aa879);
+    background:
+        linear-gradient(
+            145deg,
+            #16845b,
+            #2aa879
+        );
 }
 
 .material-area.completed .material-status {
@@ -790,21 +981,32 @@ img {
 
 #portal {
     position: absolute;
+
     right: 930px;
     top: 665px;
+
     z-index: 180;
+
     width: 270px;
     min-height: 300px;
+
     padding: 20px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     text-align: center;
+
     border-radius: 24px;
-    background: rgba(7, 29, 73, 0.92);
+
+    background: rgba(7, 29, 73, 0.96);
+
     border: 2px solid rgba(255, 255, 255, 0.12);
+
     box-shadow: var(--shadow-lg);
+
     transition:
         opacity 0.3s ease,
         border-color 0.3s ease,
@@ -814,19 +1016,26 @@ img {
 .portal-object {
     width: 120px;
     height: 150px;
+
     margin-bottom: 16px;
+
     border-radius: 60px 60px 18px 18px;
+
     display: flex;
     align-items: flex-end;
     justify-content: center;
+
     padding-bottom: 14px;
+
     background:
         linear-gradient(
             145deg,
             #29364d,
             #111827
         );
+
     border: 5px solid #4b5563;
+
     box-shadow:
         inset 0 0 0 3px rgba(255, 255, 255, 0.05),
         0 8px 20px rgba(0, 0, 0, 0.25);
@@ -834,52 +1043,78 @@ img {
 
 .portal-status {
     color: #d1d5db;
+
     font-size: 0.72rem;
     font-weight: 800;
+
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
 .portal-label h2 {
     margin: 0;
+
     color: var(--white);
+
     font-size: 1.35rem;
 }
 
 .portal-label p {
     margin: 7px 0 12px;
+
     color: rgba(255, 255, 255, 0.7);
+
     font-size: 0.82rem;
 }
 
 #portal-button {
     min-height: 42px;
+
     padding: 9px 17px;
+
     border: 0;
     border-radius: 9px;
+
     background: #4b5563;
+
     color: #d1d5db;
+
     font-weight: 800;
 }
 
-/* Portal unlocked */
+/* =========================================================
+   PORTAL OPEN
+========================================================= */
 
 #portal.open,
 #portal[data-status="open"] {
     border-color: var(--yellow-500);
+
     background:
-        radial-gradient(circle at 50% 35%, rgba(245, 196, 0, 0.16), transparent 45%),
-        rgba(7, 29, 73, 0.94);
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(245, 196, 0, 0.16),
+            transparent 45%
+        ),
+        rgba(7, 29, 73, 0.96);
 }
 
 #portal.open .portal-object,
 #portal[data-status="open"] .portal-object {
     border-color: var(--yellow-400);
+
     background:
-        radial-gradient(circle at 50% 48%, rgba(255, 212, 59, 0.9), rgba(35, 132, 223, 0.72) 42%, #071d49 78%);
+        radial-gradient(
+            circle at 50% 48%,
+            rgba(255, 212, 59, 0.9),
+            rgba(35, 132, 223, 0.72) 42%,
+            #071d49 78%
+        );
+
     box-shadow:
         0 0 18px rgba(245, 196, 0, 0.55),
         0 0 45px rgba(35, 132, 223, 0.42);
+
     animation: portalPulse 2.2s ease-in-out infinite;
 }
 
@@ -890,14 +1125,17 @@ img {
 
 #portal.open #portal-button,
 #portal[data-status="open"] #portal-button {
-    background: linear-gradient(135deg, var(--yellow-500), var(--yellow-400));
-    color: var(--blue-900);
-    box-shadow: 0 6px 18px rgba(245, 196, 0, 0.25);
-}
+    background:
+        linear-gradient(
+            135deg,
+            var(--yellow-500),
+            var(--yellow-400)
+        );
 
-#portal.open #portal-button:hover,
-#portal[data-status="open"] #portal-button:hover {
-    transform: translateY(-2px);
+    color: var(--blue-900);
+
+    box-shadow:
+        0 6px 18px rgba(245, 196, 0, 0.25);
 }
 
 @keyframes portalPulse {
@@ -914,105 +1152,91 @@ img {
 }
 
 /* =========================================================
-   CAMERA CONTROLS
+   HIDE OLD CAMERA ARROW CONTROLS
 ========================================================= */
 
+/*
+ * Elemen #camera-controls masih boleh tetap berada
+ * di HTML agar tidak perlu mengubah struktur HTML.
+ *
+ * Tetapi seluruh kontrol kamera disembunyikan:
+ * - tidak terlihat
+ * - tidak mengambil ruang
+ * - tidak menerima touch/pointer
+ * - tidak menutupi gameplay
+ */
+
 #camera-controls {
-    position: absolute;
-    right: 18px;
-    bottom: 18px;
-    z-index: 450;
-    width: 140px;
-    height: 140px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
+    display: none !important;
+
+    visibility: hidden;
+    opacity: 0;
+
+    width: 0;
+    height: 0;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
     pointer-events: none;
 }
 
+/* Pastikan seluruh child juga tidak menangkap interaction */
+
 #camera-controls button {
-    min-width: 40px;
-    min-height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 10px;
-    background: rgba(7, 29, 73, 0.82);
-    color: var(--white);
-    font-size: 1.1rem;
-    font-weight: 800;
-    pointer-events: auto;
-    backdrop-filter: blur(5px);
-    transition:
-        background 0.2s ease,
-        transform 0.15s ease;
-}
+    display: none !important;
 
-#camera-controls button:hover {
-    background: rgba(18, 75, 155, 0.95);
-}
-
-#camera-controls button:active {
-    transform: scale(0.94);
-}
-
-#camera-up {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-#camera-left {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-#camera-center {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-#camera-right {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-#camera-down {
-    grid-column: 2;
-    grid-row: 3;
+    pointer-events: none;
 }
 
 /* =========================================================
-   MODAL BASE
+   MODAL
 ========================================================= */
 
 .modal {
     position: fixed;
     inset: 0;
+
     z-index: 2000;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 20px;
 }
 
 .modal-overlay {
     position: absolute;
     inset: 0;
+
     background: rgba(3, 13, 32, 0.68);
+
     backdrop-filter: blur(3px);
 }
 
 .modal-content {
     position: relative;
+
     z-index: 1;
+
     width: min(720px, 100%);
     max-height: min(90vh, 820px);
+
     display: flex;
     flex-direction: column;
+
     overflow: hidden;
+
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
+
     background: var(--white);
+
     box-shadow: var(--shadow-lg);
+
     animation: modalIn 0.2s ease-out;
 }
 
@@ -1030,33 +1254,52 @@ img {
 
 .modal-header {
     flex: 0 0 auto;
+
     min-height: 72px;
+
     padding: 17px 20px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 15px;
+
     border-bottom: 1px solid var(--gray-200);
-    background: linear-gradient(180deg, #ffffff, #f8fbff);
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f8fbff
+        );
 }
 
 .modal-header h2 {
     margin: 0;
+
     color: var(--blue-900);
+
     font-size: clamp(1.25rem, 3vw, 1.65rem);
     line-height: 1.25;
 }
 
 .modal-close-button {
     flex: 0 0 auto;
+
     width: 40px;
     height: 40px;
+
     border: 0;
     border-radius: 9px;
+
     background: var(--gray-100);
+
     color: var(--gray-700);
+
     font-size: 1.5rem;
     line-height: 1;
+
     transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -1073,7 +1316,9 @@ img {
 .material-modal-body,
 .instruction-modal-body {
     flex: 1 1 auto;
+
     overflow-y: auto;
+
     overscroll-behavior: contain;
 }
 
@@ -1087,10 +1332,14 @@ img {
 
 .material-modal-number {
     display: block;
+
     margin-bottom: 3px;
+
     color: var(--blue-600);
+
     font-size: 0.75rem;
     font-weight: 800;
+
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
@@ -1102,29 +1351,36 @@ img {
 .material-summary-section,
 .material-points-section {
     padding: 18px;
+
     border-radius: var(--radius-md);
+
     background: var(--gray-100);
 }
 
 .material-points-section {
     margin-top: 15px;
+
     background: var(--yellow-100);
 }
 
 .material-modal-body h3 {
     margin: 0 0 9px;
+
     color: var(--blue-800);
+
     font-size: 1rem;
 }
 
 .material-modal-body p {
     margin: 0;
+
     color: var(--gray-700);
 }
 
 .material-modal-body ul {
     margin: 0;
     padding-left: 20px;
+
     color: var(--gray-700);
 }
 
@@ -1138,18 +1394,25 @@ img {
 
 .modal-footer {
     flex: 0 0 auto;
+
     min-height: 70px;
+
     padding: 13px 20px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 12px;
+
     border-top: 1px solid var(--gray-200);
+
     background: #fafcff;
 }
 
 #material-completion-indicator {
     color: var(--gray-500);
+
     font-size: 0.85rem;
     font-weight: 700;
 }
@@ -1162,12 +1425,18 @@ img {
 #instruction-understand-button,
 #menu-confirm-button {
     min-height: 42px;
+
     padding: 9px 17px;
+
     border: 0;
     border-radius: 9px;
+
     background: var(--blue-700);
+
     color: var(--white);
+
     font-weight: 800;
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
@@ -1185,7 +1454,7 @@ img {
 }
 
 /* =========================================================
-   INSTRUCTION MODAL
+   INSTRUCTION / CONFIRMATION MODAL
 ========================================================= */
 
 .instruction-modal-content,
@@ -1196,6 +1465,7 @@ img {
 .instruction-modal-body,
 .menu-confirmation-body {
     padding: 22px;
+
     color: var(--gray-700);
 }
 
@@ -1214,11 +1484,16 @@ img {
 
 #menu-cancel-button {
     min-height: 42px;
+
     padding: 9px 17px;
+
     border: 1px solid var(--gray-300);
     border-radius: 9px;
+
     background: var(--white);
+
     color: var(--gray-700);
+
     font-weight: 800;
 }
 
@@ -1240,18 +1515,28 @@ img {
 
 #notification {
     position: fixed;
+
     top: 84px;
     right: 20px;
+
     z-index: 3000;
+
     width: min(390px, calc(100vw - 40px));
+
     padding: 15px 16px;
+
     display: flex;
     align-items: flex-start;
+
     gap: 12px;
+
     border-left: 5px solid var(--yellow-500);
     border-radius: 12px;
+
     background: rgba(255, 255, 255, 0.98);
+
     box-shadow: var(--shadow-lg);
+
     animation: notificationIn 0.25s ease-out;
 }
 
@@ -1262,24 +1547,33 @@ img {
 
 #notification-title {
     margin: 0 0 3px;
+
     color: var(--blue-900);
+
     font-size: 0.95rem;
 }
 
 #notification-message {
     margin: 0;
+
     color: var(--gray-700);
+
     font-size: 0.85rem;
 }
 
 #notification-close {
     flex: 0 0 auto;
+
     width: 30px;
     height: 30px;
+
     border: 0;
     border-radius: 7px;
+
     background: transparent;
+
     color: var(--gray-500);
+
     font-size: 1.2rem;
 }
 
@@ -1301,7 +1595,7 @@ img {
 }
 
 /* =========================================================
-   KEYBOARD / FOCUS ACCESSIBILITY
+   ACCESSIBILITY
 ========================================================= */
 
 button:focus-visible,
@@ -1312,7 +1606,7 @@ input:focus-visible,
 }
 
 /* =========================================================
-   RESPONSIVE - TABLET
+   TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -1345,19 +1639,44 @@ input:focus-visible,
     .game-controls {
         grid-column: 1;
         grid-row: 1;
+
         justify-content: flex-end;
     }
 
     .player-info {
         display: none;
     }
+
+    /*
+     * Sedikit lebih jauh pada tablet.
+     * UI tidak ikut diperkecil.
+     */
+    #game-viewport {
+        width: min(
+            calc(100vw - 32px),
+            calc(100vh - var(--hud-height) - 48px),
+            760px
+        );
+    }
+
+    #game-world {
+        /*
+         * Memberi ruang lebih banyak untuk kamera
+         * tanpa mengubah ukuran HUD.
+         */
+        transform-origin: 0 0;
+    }
 }
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 640px) {
+    :root {
+        --hud-height: 62px;
+    }
+
     body {
         overflow: hidden;
     }
@@ -1396,8 +1715,10 @@ input:focus-visible,
 
     .character-option {
         min-height: 115px;
+
         flex-direction: row;
         justify-content: flex-start;
+
         padding: 12px 18px;
     }
 
@@ -1414,26 +1735,77 @@ input:focus-visible,
         width: 100%;
     }
 
-    :root {
-        --hud-height: 62px;
-    }
+    /* -----------------------------------------------------
+       MOBILE HUD
+    ----------------------------------------------------- */
 
     #game-hud {
         height: var(--hud-height);
+
         padding: 8px 10px;
     }
 
     .progress-container {
         min-width: 125px;
+
         padding: 6px 10px;
+
         font-size: 0.78rem;
     }
 
     #menu-button {
         min-height: 36px;
+
         padding: 6px 11px;
+
         font-size: 0.8rem;
     }
+
+    /* -----------------------------------------------------
+       MOBILE CIRCULAR VIEWPORT
+       
+       Menggunakan ukuran yang sama untuk width dan height.
+       Dengan aspect-ratio 1:1 viewport selalu circular.
+    ----------------------------------------------------- */
+
+    #game-viewport {
+        top: calc(var(--hud-height) + 12px);
+
+        width: min(
+            calc(100vw - 28px),
+            calc(100vh - var(--hud-height) - 82px)
+        );
+
+        height: auto;
+
+        aspect-ratio: 1 / 1;
+
+        border-width: 4px;
+
+        box-shadow:
+            0 14px 32px rgba(7, 29, 73, 0.2),
+            0 0 0 6px rgba(255, 255, 255, 0.55);
+    }
+
+    /*
+     * Tidak mengecilkan HUD maupun teks.
+     * Efek "zoom out" hanya diterapkan pada world.
+     *
+     * Jika script.js memberikan transform sendiri,
+     * rule ini tidak menimpa transform tersebut.
+     *
+     * Ukuran player dipertahankan agar avatar tetap jelas,
+     * sementara area viewport yang circular memberi ruang
+     * eksplorasi lebih luas.
+     */
+
+    #game-world {
+        background-size: 80px 80px;
+    }
+
+    /* -----------------------------------------------------
+       PLAYER MOBILE
+    ----------------------------------------------------- */
 
     #player {
         width: 74px;
@@ -1447,12 +1819,18 @@ input:focus-visible,
 
     #player-name-label {
         max-width: 120px;
+
         font-size: 0.68rem;
     }
+
+    /* -----------------------------------------------------
+       MATERIAL MOBILE
+    ----------------------------------------------------- */
 
     .material-area {
         width: 190px;
         min-height: 175px;
+
         padding: 11px;
     }
 
@@ -1467,13 +1845,20 @@ input:focus-visible,
 
     .material-open-button {
         min-height: 34px;
+
         padding: 6px 10px;
+
         font-size: 0.72rem;
     }
+
+    /* -----------------------------------------------------
+       PORTAL MOBILE
+    ----------------------------------------------------- */
 
     #portal {
         width: 220px;
         min-height: 250px;
+
         padding: 15px;
     }
 
@@ -1482,12 +1867,9 @@ input:focus-visible,
         height: 125px;
     }
 
-    #camera-controls {
-        width: 126px;
-        height: 126px;
-        right: 10px;
-        bottom: 10px;
-    }
+    /* -----------------------------------------------------
+       MODAL MOBILE
+    ----------------------------------------------------- */
 
     .modal {
         padding: 10px;
@@ -1495,11 +1877,13 @@ input:focus-visible,
 
     .modal-content {
         max-height: calc(100vh - 20px);
+
         border-radius: 15px;
     }
 
     .modal-header {
         min-height: 62px;
+
         padding: 13px 15px;
     }
 
@@ -1518,6 +1902,7 @@ input:focus-visible,
 
     .modal-footer {
         padding: 11px 15px;
+
         flex-wrap: wrap;
     }
 
@@ -1529,9 +1914,14 @@ input:focus-visible,
         width: 100%;
     }
 
+    /* -----------------------------------------------------
+       NOTIFICATION MOBILE
+    ----------------------------------------------------- */
+
     #notification {
         top: 72px;
         right: 10px;
+
         width: calc(100vw - 20px);
     }
 }
@@ -1560,14 +1950,17 @@ input:focus-visible,
         padding: 5px 8px;
     }
 
-    #camera-controls {
-        width: 112px;
-        height: 112px;
-    }
+    /*
+     * Circular viewport tetap mempertahankan rasio 1:1.
+     * Ukurannya mengikuti ruang yang tersedia.
+     */
+    #game-viewport {
+        width: min(
+            calc(100vw - 20px),
+            calc(100vh - var(--hud-height) - 72px)
+        );
 
-    #camera-controls button {
-        min-width: 34px;
-        min-height: 34px;
+        aspect-ratio: 1 / 1;
     }
 }
 
@@ -1580,8 +1973,10 @@ input:focus-visible,
     *::before,
     *::after {
         scroll-behavior: auto !important;
+
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
+
         transition-duration: 0.001ms !important;
     }
 }
